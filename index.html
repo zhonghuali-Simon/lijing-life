@@ -1,0 +1,1663 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>立鲸人生成长系统 v2 · 快捷面板</title>
+<style>
+  :root{
+    --bg:#0f1220; --card:#171a2b; --line:#242844; --text:#e8ecf8; --sub:#8b93b7;
+    --pm:#7c9cff; --da:#4dd6c4; --tl:#f6c453; --tm:#c084fc; --ri:#f472b6; --body:#fb923c;
+    --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444; --gold:#fbbf24; --accent:#7c9cff;
+  }
+  body.light{
+    --bg:#f6f7fb; --card:#ffffff; --line:#e5e8f2; --text:#1f2340; --sub:#6b7396;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,PingFang SC,Segoe UI,sans-serif;background:linear-gradient(180deg,var(--bg),#131730);color:var(--text);min-height:100vh}
+  body.light{background:linear-gradient(180deg,#eef1fa,#f6f7fb)}
+  header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:rgba(15,18,32,.72);backdrop-filter:blur(10px);position:sticky;top:0;z-index:20}
+  body.light header{background:rgba(255,255,255,.85)}
+  header h1{margin:0;font-size:17px;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+  header .meta{font-size:12px;color:var(--sub);margin-top:2px}
+  .btns{display:flex;gap:6px;flex-wrap:wrap}
+  button{background:#232848;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;transition:all .15s}
+  body.light button{background:#eff2fa;color:var(--text)}
+  button:hover{background:#2c3357;border-color:#3a4170}
+  body.light button:hover{background:#e0e5f5}
+  button.primary{background:linear-gradient(135deg,#5b7cff,#7c9cff);border-color:transparent;color:#fff}
+  button.danger{background:transparent;color:var(--danger);border-color:#3a1e28}
+  button.ghost{background:transparent}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .tabs{display:flex;gap:4px;padding:0 24px;border-bottom:1px solid var(--line);background:rgba(15,18,32,.6);position:sticky;top:70px;z-index:15;overflow-x:auto}
+  body.light .tabs{background:rgba(255,255,255,.75)}
+  .tab{padding:10px 16px;font-size:13px;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
+  .tab.active{color:var(--text);border-bottom-color:var(--accent)}
+  .tab .cnt{margin-left:5px;font-size:11px;background:var(--line);padding:1px 6px;border-radius:99px}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px 24px 60px}
+  .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px}
+  @media (max-width: 900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .card h2{margin:0 0 12px;font-size:13px;color:var(--sub);letter-spacing:1px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .card h2 .right{font-size:13px;color:var(--gold);text-transform:none;letter-spacing:0;font-weight:600}
+  .task{display:flex;align-items:flex-start;gap:12px;padding:10px 8px;border-radius:10px;transition:all .15s;position:relative}
+  .task:hover{background:rgba(255,255,255,.03)}
+  body.light .task:hover{background:rgba(0,0,0,.03)}
+  .task.done{opacity:.55}
+  .task.done .title{text-decoration:line-through}
+  .task input[type=checkbox]{width:18px;height:18px;accent-color:#7c9cff;margin-top:2px;cursor:pointer;flex-shrink:0}
+  .task .body{flex:1;min-width:0}
+  .task .title{font-size:14px;font-weight:500;margin-bottom:2px}
+  .task .desc{font-size:12px;color:var(--sub)}
+  .task .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}
+  .tag{font-size:11px;padding:2px 8px;border-radius:999px;background:#232848;color:var(--sub)}
+  body.light .tag{background:#eff2fa}
+  .tag.pts{background:linear-gradient(135deg,#453a1a,#5c4a1a);color:var(--gold);font-weight:600}
+  .tag.dim-PM{background:rgba(124,156,255,.15);color:var(--pm)}
+  .tag.dim-DA{background:rgba(77,214,196,.15);color:var(--da)}
+  .tag.dim-TL{background:rgba(246,196,83,.15);color:var(--tl)}
+  .tag.dim-TM{background:rgba(192,132,252,.15);color:var(--tm)}
+  .tag.dim-RI{background:rgba(244,114,182,.15);color:var(--ri)}
+  .tag.dim-BODY{background:rgba(251,146,60,.15);color:var(--body)}
+  .task-btn{background:transparent;border:1px solid var(--line);color:var(--sub);font-size:11px;padding:2px 8px;border-radius:6px;cursor:pointer}
+  .task-btn:hover{color:var(--accent);border-color:var(--accent)}
+  .task-group-title{margin:14px 4px 6px;font-size:12px;color:var(--sub);letter-spacing:1px;font-weight:600}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+  .stat{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  body.light .stat{background:#f7f8fc}
+  .stat .k{font-size:11px;color:var(--sub);letter-spacing:1px}
+  .stat .v{font-size:22px;font-weight:700;margin-top:2px}
+  .stat .sub{font-size:11px;color:var(--sub);margin-top:2px}
+  .ability-row{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:13px}
+  .ability-row .name{width:80px;color:var(--sub);font-size:12px}
+  .ability-row .bar{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;position:relative}
+  body.light .ability-row .bar{background:#eef1fa}
+  .ability-row .fill{height:100%;border-radius:99px;transition:width .5s}
+  .ability-row .val{width:74px;text-align:right;font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums}
+  .fill.PM{background:var(--pm)} .fill.DA{background:var(--da)} .fill.TL{background:var(--tl)}
+  .fill.TM{background:var(--tm)} .fill.RI{background:var(--ri)} .fill.BODY{background:var(--body)}
+  .badges{display:flex;flex-wrap:wrap;gap:8px}
+  .badge{padding:6px 10px;border-radius:99px;font-size:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--sub)}
+  body.light .badge{background:#f7f8fc}
+  .badge.unlocked{background:linear-gradient(135deg,#2c2410,#453a1a);border-color:#665222;color:var(--gold);font-weight:600}
+  body.light .badge.unlocked{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#fbbf24}
+  .log{max-height:280px;overflow-y:auto;font-size:12px;color:var(--sub);line-height:1.8}
+  .log .ts{color:#5c6493;margin-right:6px;font-variant-numeric:tabular-nums}
+  .log .gain{color:var(--ok);font-weight:600}
+  .log .loss{color:var(--danger);font-weight:600}
+  .empty{color:var(--sub);font-size:12px;padding:20px;text-align:center}
+  .quick-add{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .quick-add input,.quick-add select{flex:1;background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 10px;font-size:13px;min-width:100px}
+  body.light .quick-add input,body.light .quick-add select{background:#f7f8fc}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7c9cff,#5b7cff);padding:10px 20px;border-radius:99px;font-size:13px;color:#fff;box-shadow:0 8px 30px rgba(124,156,255,.4);opacity:0;transition:opacity .3s,transform .3s;z-index:100;pointer-events:none;max-width:80vw}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+  .toast.gold{background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+  .toast.danger{background:linear-gradient(135deg,#ef4444,#dc2626)}
+  .page{display:none}
+  .page.active{display:block}
+
+  .shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .shop-item{border:1px solid var(--line);border-radius:12px;padding:14px;background:rgba(255,255,255,.02);position:relative;overflow:hidden}
+  body.light .shop-item{background:#fafbff}
+  .shop-item .icon{font-size:32px}
+  .shop-item .name{font-size:14px;font-weight:600;margin-top:4px}
+  .shop-item .cond{font-size:12px;color:var(--sub);margin-top:4px;min-height:32px}
+  .shop-item .cost{color:var(--gold);font-weight:600;margin-top:8px;font-size:13px}
+  .shop-item .progress{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+  .shop-item .progress .p-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s}
+  .shop-item button{width:100%;margin-top:10px}
+  .shop-item.owned{border-color:var(--ok);background:linear-gradient(135deg,rgba(34,197,94,.08),transparent)}
+  .shop-item.locked{opacity:.55}
+
+  .cal-heat{display:grid;grid-template-columns:repeat(auto-fill,minmax(28px,1fr));gap:4px;margin-top:8px}
+  .cal-day{aspect-ratio:1;background:rgba(255,255,255,.04);border-radius:5px;position:relative;cursor:pointer;font-size:9px;color:var(--sub);display:flex;align-items:center;justify-content:center;transition:transform .15s}
+  body.light .cal-day{background:#eef1fa}
+  .cal-day:hover{transform:scale(1.15);z-index:2}
+  .cal-day.l1{background:rgba(124,156,255,.25)} .cal-day.l2{background:rgba(124,156,255,.5)}
+  .cal-day.l3{background:rgba(124,156,255,.75)} .cal-day.l4{background:rgba(124,156,255,1);color:#fff}
+  .cal-day.today{outline:2px solid var(--gold)}
+  .hist-table{width:100%;border-collapse:collapse;font-size:13px}
+  .hist-table th{text-align:left;padding:8px;color:var(--sub);font-size:11px;letter-spacing:1px;border-bottom:1px solid var(--line);text-transform:uppercase}
+  .hist-table td{padding:8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .hist-table tr:hover td{background:rgba(255,255,255,.02)}
+
+  .pomo{display:flex;align-items:center;gap:16px;padding:14px;background:linear-gradient(135deg,rgba(124,156,255,.08),rgba(244,114,182,.05));border-radius:12px;border:1px solid var(--line);flex-wrap:wrap}
+  .pomo .timer{font-size:32px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:2px}
+  .pomo .info{flex:1;font-size:12px;color:var(--sub);min-width:120px}
+  .pomo .info b{color:var(--text);display:block;font-size:14px;margin-bottom:2px}
+
+  .badge-pop{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;animation:fadeIn .3s}
+  .badge-pop.show{display:flex}
+  .badge-pop .box{background:linear-gradient(135deg,#453a1a,#5c4a1a);border:2px solid var(--gold);border-radius:20px;padding:36px 48px;text-align:center;animation:bounce .5s}
+  .badge-pop .box .ico{font-size:64px}
+  .badge-pop .box .ttl{font-size:22px;font-weight:700;color:var(--gold);margin-top:8px}
+  .badge-pop .box .sub{color:#eaddb9;margin-top:6px;font-size:13px}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes bounce{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+
+  .switch{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--sub)}
+  .switch input{margin:0}
+  select,input[type=text],input[type=number],textarea{background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 10px;font-size:13px;font-family:inherit}
+  body.light select,body.light input[type=text],body.light input[type=number],body.light textarea{background:#f7f8fc}
+  .kbd{background:var(--line);padding:1px 6px;border-radius:4px;font-size:11px;font-family:ui-monospace,Menlo;color:var(--sub);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>🎮 立鲸人生成长系统 <span class="kbd" style="font-size:10px">v2.0</span></h1>
+    <div class="meta" id="meta">加载中…</div>
+  </div>
+  <div class="btns">
+    <button class="ghost" title="切换主题" onclick="toggleTheme()">🌓</button>
+    <button title="导出全部数据备份" onclick="exportAll()">💾 备份</button>
+    <button title="导入JSON恢复" onclick="importAll()">📥 导入</button>
+    <button onclick="exportMD()">📋 日报</button>
+    <button onclick="quickRollover()">🌅 明日</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-page="today" onclick="switchPage('today')">📌 今日任务 <span class="cnt" id="tabTodayCnt">0</span></div>
+  <div class="tab" data-page="dash" onclick="switchPage('dash')">📊 战力看板</div>
+  <div class="tab" data-page="shop" onclick="switchPage('shop')">🎁 兑换商店</div>
+  <div class="tab" data-page="history" onclick="switchPage('history')">📅 历史</div>
+  <div class="tab" data-page="pomo" onclick="switchPage('pomo')">🍅 专注</div>
+  <div class="tab" data-page="skills" onclick="switchPage('skills')">🏅 能力库</div>
+  <div class="tab" data-page="settings" onclick="switchPage('settings')">⚙️ 设置</div>
+</div>
+
+<div class="wrap">
+  <div class="page active" id="page-today">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>今日任务清单 <span class="right" id="taskProgress">0/0 · 0分</span></h2>
+          <div id="taskList"></div>
+          <div class="task-group-title">➕ 新增任务（自动按难度打分）</div>
+          <div class="quick-add">
+            <input id="qa-title" placeholder="任务标题（如：给小张做1v1辅导）" style="min-width:200px" oninput="renderDiffHint()" />
+            <select id="qa-group" title="所属分组" onchange="renderDiffHint()">
+              <option value="工作线">🏢 工作线</option>
+              <option value="收入线">💰 收入线</option>
+              <option value="体魄线">💪 体魄线</option>
+              <option value="学习线">📚 学习线</option>
+              <option value="临时线">⚡ 临时线</option>
+            </select>
+            <select id="qa-diff" title="难度自动匹配分数与维度" onchange="renderDiffHint()">
+              <option value="XS">XS · 微任务(3分)</option>
+              <option value="S">S · 小任务(5分)</option>
+              <option value="M" selected>M · 中任务(15分)</option>
+              <option value="L">L · 大任务(30分)</option>
+              <option value="XL">XL · 硬骨头(50分)</option>
+              <option value="XXL">XXL · 里程碑(80分)</option>
+            </select>
+            <select id="qa-dim" title="主维度（次维度自动分配）" onchange="renderDiffHint()">
+              <option value="AUTO">🎯 自动按分组</option>
+              <option value="PM">项目管理 PM</option>
+              <option value="DA">数据&AI DA</option>
+              <option value="TL">技能成长 TL</option>
+              <option value="TM">认知提升 TM</option>
+              <option value="RI">收入增长 RI</option>
+              <option value="BODY">体魄 BODY</option>
+            </select>
+            <button class="primary" onclick="addTask()">➕ 添加</button>
+          </div>
+          <div id="diffHint" style="margin-top:8px;font-size:11px;color:var(--sub)"></div>
+          <div style="margin-top:10px;font-size:11px;color:var(--sub)">快捷键：<span class="kbd">1-9</span> 勾选前9项 · <span class="kbd">Z</span> 撤销 · <span class="kbd">P</span> 番茄钟 · 任务右侧 <span class="kbd">✏️</span> 编辑 <span class="kbd">🗑️</span> 删除</div>
+        </div>
+
+        <div class="card">
+          <h2>今日感想 · One Line</h2>
+          <input type="text" id="dailyNote" placeholder="今天最爽/最卡/最亮的一件事…" style="width:100%" oninput="saveNote()" />
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>能力面板 <span class="right" id="totalTag">总积分 0</span></h2>
+          <div class="stat-grid">
+            <div class="stat"><div class="k">今日入账</div><div class="v" id="todayPts">0</div><div class="sub" id="todayInfo">待开工</div></div>
+            <div class="stat"><div class="k">连击</div><div class="v" id="streakDays">0</div><div class="sub">全勤天数</div></div>
+            <div class="stat"><div class="k">健身连击</div><div class="v" id="bodyStreak">0</div><div class="sub">连续锻炼天</div></div>
+          </div>
+          <div id="abilityPanel"></div>
+        </div>
+
+        <div class="card">
+          <h2>今日徽章 🏆</h2>
+          <div class="badges" id="badgeBox"></div>
+        </div>
+
+        <div class="card">
+          <h2>流水 📜 <button style="font-size:11px;padding:2px 8px" onclick="undo()">↩️ 撤销</button></h2>
+          <div class="log" id="logBox"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-dash">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>累计能力面板（长期）</h2>
+          <div id="cumuPanel"></div>
+        </div>
+        <div class="card">
+          <h2>本周战力（近7日）</h2>
+          <div id="weekChart" style="height:180px"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h2>已解锁徽章</h2>
+          <div class="badges" id="allBadges"></div>
+        </div>
+        <div class="card">
+          <h2>钱包 💰</h2>
+          <div class="stat-grid">
+            <div class="stat"><div class="k">星币</div><div class="v" id="coinTotal">0</div><div class="sub">可用于兑换</div></div>
+            <div class="stat"><div class="k">累计消费</div><div class="v" id="coinSpent">0</div><div class="sub">已兑换奖励</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--sub);margin-top:8px">1分 = 1星币 · 完成任务/解锁徽章自动到账</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-shop">
+    <div class="card">
+      <h2>行为奖励商店 🎁 <span class="right">💰 <span id="coinInHeader">0</span> 星币</span></h2>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:12px">
+        满足条件 + 花费星币 → 解锁奖励。兑换后自己去执行，仪式感就是意义本身。<br>
+        <b>精选推荐</b>：展示你当前最可能兑换的奖励 · 点击底部「更多奖励」查看完整分类库
+      </div>
+      <div class="shop-grid" id="shopGrid"></div>
+      <div style="text-align:center;margin:18px 0">
+        <button class="primary" onclick="toggleFullShop()" id="fullShopBtn">🎪 更多奖励 · 完整分类库</button>
+      </div>
+      <div id="fullShopPanel" style="display:none">
+        <div id="shopCatTabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
+        <div class="shop-grid" id="shopFullGrid"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>➕ 自定义奖励</h2>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:10px">
+        添加属于你自己的长期奖励库，可随时兑换
+      </div>
+      <div class="quick-add">
+        <input id="rw-name" placeholder="奖励名称（如：约朋友吃火锅）" style="min-width:180px" />
+        <input id="rw-cost" type="number" placeholder="星币" style="width:70px" value="80" min="1" />
+        <select id="rw-cat">
+          <option value="味蕾">🍽️ 味蕾</option>
+          <option value="微醺">🍺 微醺</option>
+          <option value="放松">🧘 放松</option>
+          <option value="社交">👥 社交</option>
+          <option value="感官">🎨 感官</option>
+          <option value="户外打卡">🧗 户外打卡</option>
+          <option value="生活升级">🏠 生活升级</option>
+          <option value="仪式感">🕯️ 仪式感</option>
+          <option value="自定义">✨ 自定义</option>
+        </select>
+        <input id="rw-desc" placeholder="一句话描述" style="min-width:140px" />
+        <button class="primary" onclick="addCustomReward()">+ 添加</button>
+      </div>
+      <div id="customRewardList" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div class="page" id="page-history">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>近30日热力图 🔥</h2>
+          <div class="cal-heat" id="calHeat"></div>
+          <div style="font-size:11px;color:var(--sub);margin-top:10px">深色 = 得分越高 · 点击查看当日详情 · 金框 = 今天</div>
+        </div>
+        <div class="card">
+          <h2>历史流水（按日）</h2>
+          <table class="hist-table">
+            <thead><tr><th>日期</th><th>完成</th><th>得分</th><th>备注</th><th></th></tr></thead>
+            <tbody id="histTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="card" id="dayDetailCard" style="display:none">
+          <h2>📋 <span id="ddTitle">日期详情</span> <button class="task-btn" onclick="closeDayDetail()">✕</button></h2>
+          <div id="ddBody"></div>
+        </div>
+        <div class="card">
+          <h2>近30日趋势</h2>
+          <div id="histChart" style="height:200px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-pomo">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>专注模式 🍅</h2>
+          <div class="pomo">
+            <div class="timer" id="pomoTimer">25:00</div>
+            <div class="info">
+              <b id="pomoTask">未绑定任务</b>
+              <div id="pomoState">按开始，认真工作 <span id="pomoWorkMin">25</span> 分钟</div>
+            </div>
+            <button class="primary" onclick="pomoToggle()" id="pomoBtn">开始</button>
+            <button onclick="pomoReset()">重置</button>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span style="font-size:12px;color:var(--sub)">绑定任务：</span>
+            <select id="pomoBind" onchange="pomoBindTask()">
+              <option value="">（不绑定）</option>
+            </select>
+            <span style="font-size:12px;color:var(--sub);margin-left:12px">工作/休息分钟：</span>
+            <input type="number" id="pomoWork" value="25" min="5" max="90" style="max-width:70px" onchange="pomoConfig()" />
+            <input type="number" id="pomoBreak" value="10" min="3" max="30" style="max-width:70px" onchange="pomoConfig()" />
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--sub)">
+            完成一轮 25 分钟专注 = <b style="color:var(--gold)">+3 星币</b>，5 轮解锁「深潜者」徽章。
+          </div>
+        </div>
+        <div class="card">
+          <h2>今日专注记录 <span class="right" id="pomoTodayCnt">0 轮</span></h2>
+          <div id="pomoLog" class="log"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h2>专注小贴士</h2>
+          <div style="font-size:13px;line-height:1.9;color:var(--sub)">
+            🎯 <b style="color:var(--text)">1 轮</b> = 25 分钟深度工作 + 10 分钟休息<br>
+            📵 手机静音、消息延后处理<br>
+            💧 休息时喝水、拉伸颈椎<br>
+            🚫 卡壳超过 3 分钟先记 TODO，别死磕<br>
+            🍅 3 轮为一组，组间可延长到 20 分钟<br>
+            🌙 每天 5 轮以内最健康，别透支
+          </div>
+        </div>
+        <div class="card">
+          <h2>累计</h2>
+          <div class="stat-grid">
+            <div class="stat"><div class="k">总轮数</div><div class="v" id="pomoTotal">0</div><div class="sub">深度专注</div></div>
+            <div class="stat"><div class="k">总时长</div><div class="v" id="pomoHours">0h</div><div class="sub">全部工作时间</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-skills">
+    <div class="card">
+      <h2>🏅 能力库 <span class="right" id="skillCnt">0 项</span></h2>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:12px">
+        个人能力/证书档案。已考取直接标记，进行中显示进度条。新技能考完记得点「+ 新增」。
+      </div>
+      <div id="skillGrid"></div>
+      <div class="task-group-title">➕ 新增能力</div>
+      <div class="quick-add">
+        <input id="sk-name" placeholder="能力名称（如：健身NSCA-CSCS）" style="min-width:180px" />
+        <select id="sk-cat" title="分类">
+          <option value="🏋️ 健身">🏋️ 健身</option>
+          <option value="🌊 水域">🌊 水域</option>
+          <option value="⚽ 运动">⚽ 运动</option>
+          <option value="🎨 兴趣">🎨 兴趣</option>
+          <option value="🏔️ 户外">🏔️ 户外</option>
+          <option value="💼 职业">💼 职业</option>
+          <option value="💻 技术">💻 技术</option>
+          <option value="📖 其他">📖 其他</option>
+        </select>
+        <select id="sk-level" title="等级">
+          <option value="入门">入门</option>
+          <option value="初级">初级</option>
+          <option value="中级">中级</option>
+          <option value="高级">高级</option>
+          <option value="教练/大师">教练/大师</option>
+        </select>
+        <select id="sk-status">
+          <option value="done">✅ 已获得</option>
+          <option value="doing">⏳ 进行中</option>
+          <option value="plan">📋 计划中</option>
+        </select>
+        <input id="sk-note" placeholder="备注（考取时间/编号）" style="min-width:160px" />
+        <button onclick="addSkill()">+ 新增</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-settings">
+    <div class="card">
+      <h2>偏好</h2>
+      <label class="switch"><input type="checkbox" id="sfxOn" onchange="cfgSet('sfx',this.checked)"> 完成任务时播放音效</label><br><br>
+      <label class="switch"><input type="checkbox" id="popOn" onchange="cfgSet('pop',this.checked)"> 徽章解锁弹窗动画</label><br><br>
+      <label class="switch"><input type="checkbox" id="lightOn" onchange="toggleTheme()"> 亮色主题</label>
+    </div>
+    <div class="card">
+      <h2>默认任务模板</h2>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:10px">
+        每次「明日重启」后自动生成的任务清单。<br>格式：<code>ID | 分组 | 标题 | 描述 | 分数 | 维度:分,维度:分</code>
+      </div>
+      <textarea id="tplEditor" style="width:100%;height:280px;font-family:ui-monospace,Menlo;font-size:12px" oninput="saveTpl()"></textarea>
+      <div style="margin-top:8px"><button onclick="resetTpl()">恢复默认模板</button></div>
+    </div>
+    <div class="card">
+      <h2>回填历史</h2>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:10px">
+        补录昨日或历史数据。7-13 已预置：完成 T-101/102/103/301/302 共 78 分。
+      </div>
+      <button onclick="backfillYesterday()">📌 回填 2026-07-13（78分）</button>
+      <button onclick="clearHistory()" class="danger">清空全部历史</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="badge-pop" id="badgePop" onclick="this.classList.remove('show')">
+  <div class="box">
+    <div class="ico" id="bpIco">🎖️</div>
+    <div class="ttl" id="bpTtl">徽章</div>
+    <div class="sub" id="bpSub">恭喜解锁</div>
+  </div>
+</div>
+
+<script>
+  const KEY = 'lijing-growth-v2';
+  const DIMS = ['PM','DA','TL','TM','RI','BODY'];
+  const DIM_LABEL = {PM:'项目管理',DA:'数据&AI',TL:'技能成长',TM:'认知提升',RI:'收入增长',BODY:'体魄'};
+
+  const DEFAULT_TPL = `T-101 | 工作线 | 新渠道沟通-北京懋诚华迅 | 会后4象限纪要发群 · 13:00 | 20 | PM:15,TM:5
+T-102 | 工作线 | 消耗填写-与崔家华对齐 | 12:15 | 8 | PM:8
+T-103 | 工作线 | 程序化结算上线复盘 | 认领1个预警action · 15:00 | 20 | TM:12,PM:8
+T-104 | 工作线 | 复购结算IPV=0数据分析 | Markdown交付 · 18:00 | 35 | DA:25,PM:10
+T-105 | 工作线 | 811327渠道分层 | 报TOP3/BOT3 · 17:00 | 5 | DA:5
+T-201 | 收入线 | 出个汗·1条小红书种子文案 | 22:00 | 15 | RI:15
+T-202 | 收入线 | 股票复盘15分钟 | 21:30 | 5 | RI:5
+T-301 | 体魄线 | 中午拉伸15分钟 | 14:00 | 5 | BODY:5
+T-302 | 体魄线 | 晚间训练-塑形分化 | 上肢/下肢/推拉腿轮换 · 23:00 | 25 | BODY:25
+T-303 | 体魄线 | 跑跳专项10分钟 | 跳绳/box jump/敏捷梯 | 8 | BODY:8
+T-401 | 学习线 | 新国职理论/实操1小时 | 解剖·生理·动作库 | 30 | DA:15,BODY:15`;
+
+  // 已有能力库（预置立鲸的技能档案）
+  const DEFAULT_SKILLS = [
+    // 🏋️ 健身
+    {id:'sk-fit-base',   cat:'🏋️ 健身',name:'多年力量训练基础', level:'高级',    status:'done', note:'肌肉与运动基础扎实'},
+    {id:'sk-fit-guozhi', cat:'🏋️ 健身',name:'新国职健身教练证', level:'教练/大师',status:'doing',note:'本月考试（2026-07）', progress:60},
+    // 🌊 水域
+    {id:'sk-owd',   cat:'🌊 水域',name:'PADI 水肺 OW',   level:'初级', status:'done'},
+    {id:'sk-aowd',  cat:'🌊 水域',name:'PADI 水肺 AOW',  level:'中级', status:'done'},
+    {id:'sk-rescue',cat:'🌊 水域',name:'PADI 水肺救援员', level:'高级', status:'done'},
+    {id:'sk-fd2',   cat:'🌊 水域',name:'自由潜二级',      level:'中级', status:'done'},
+    {id:'sk-lifeg', cat:'🌊 水域',name:'救援证',          level:'中级', status:'done'},
+    {id:'sk-surf',  cat:'🌊 水域',name:'冲浪',            level:'初级', status:'done'},
+    // ⚽ 运动
+    {id:'sk-frisbee',cat:'⚽ 运动',name:'飞盘教练',       level:'教练/大师',status:'done'},
+    {id:'sk-basket', cat:'⚽ 运动',name:'篮球',           level:'初级', status:'done'},
+    // 🏔️ 户外
+    {id:'sk-outdoor',cat:'🏔️ 户外',name:'户外生存',      level:'中级', status:'done', note:'经验丰富'},
+    // 🎨 兴趣
+    {id:'sk-photo',  cat:'🎨 兴趣',name:'摄影',           level:'初级', status:'done'},
+    // 💼 职业
+    {id:'sk-acc',    cat:'💼 职业',name:'会计从业资格',   level:'初级', status:'done'},
+    // 💻 技术
+    {id:'sk-nce2',   cat:'💻 技术',name:'计算机二级',     level:'初级', status:'done'},
+  ];
+
+  // 徽章按难度分级：入门(1-5) / 常规(5-10) / 进阶(10-20) / 精英(20-50) / 传奇(50+)
+  const BADGES = [
+    // ————— 入门级（易得 · 让人立刻感受到反馈）—————
+    {id:'破冰',ico:'🧊',tier:'入门',rule:s=>s.tasks.some(x=>x.done),desc:'完成第一个任务',bonus:3,dim:'PM'},
+    {id:'拉伸小子',ico:'🤸',tier:'入门',rule:s=>s.tasks.some(x=>x.done&&/拉伸|走路|散步|喝水/.test(x.title)),desc:'完成任一轻体魄动作',bonus:3,dim:'BODY'},
+    {id:'番茄新手',ico:'🍅',tier:'入门',rule:s=>(s.pomoToday||0)>=1,desc:'完成1轮番茄钟',bonus:3,dim:'DA'},
+    {id:'记录家',ico:'📝',tier:'入门',rule:s=>(s.note||'').trim().length>=5,desc:'填写今日感想',bonus:3,dim:'TL'},
+    {id:'首笔兑换',ico:'💳',tier:'入门',rule:s=>(s.inventory||[]).length>=1,desc:'首次商店兑换',bonus:5,dim:'RI'},
+    {id:'撤销君',ico:'↺',tier:'入门',rule:s=>(s.undoCount||0)>=1,desc:'第一次使用撤销',bonus:2,dim:'PM'},
+    {id:'起床鸟',ico:'🐦',tier:'入门',rule:s=>{const t=new Date().getHours();return s.tasks.some(x=>x.done&&x.doneAt&&new Date(x.doneAt).getHours()<9);},desc:'9点前完成一个任务',bonus:5,dim:'PM'},
+    {id:'夜行者',ico:'🌙',tier:'入门',rule:s=>s.tasks.some(x=>x.done&&x.doneAt&&new Date(x.doneAt).getHours()>=22),desc:'22点后仍在完成任务',bonus:3,dim:'BODY'},
+
+    // ————— 常规级（半天可达）—————
+    {id:'半勤生',ico:'📍',tier:'常规',rule:s=>{const d=s.tasks.filter(x=>x.done).length;return d>0&&d>=Math.ceil(s.tasks.length/2);},desc:'单日完成过半任务',bonus:5,dim:'PM'},
+    {id:'三连击',ico:'💥',tier:'常规',rule:s=>s.tasks.filter(x=>x.done).length>=3,desc:'单日完成3项',bonus:5,dim:'PM'},
+    {id:'破50',ico:'🎯',tier:'常规',rule:s=>calcTodayPts()>=50,desc:'单日积分破50',bonus:5,dim:'PM'},
+    {id:'铁血自律',ico:'💪',tier:'常规',rule:s=>s.tasks.some(x=>x.done&&/训练|力量|推|拉|深蹲|硬拉|卧推|引体/.test(x.title)),desc:'完成一次力量训练',bonus:5,dim:'BODY'},
+    {id:'文案手感',ico:'✍️',tier:'常规',rule:s=>s.tasks.find(x=>x.id==='T-201'&&x.done),desc:'完成种草文案',bonus:5,dim:'RI'},
+    {id:'股神起步',ico:'📈',tier:'常规',rule:s=>s.tasks.find(x=>x.id==='T-202'&&x.done),desc:'完成股票复盘',bonus:5,dim:'RI'},
+    {id:'双开',ico:'⚔️',tier:'常规',rule:s=>s.tasks.some(x=>x.done&&x.group==='工作线')&&s.tasks.some(x=>x.done&&x.group==='体魄线'),desc:'工作+体魄同日达成',bonus:8,dim:'BODY'},
+    {id:'番茄能手',ico:'🍅🍅',tier:'常规',rule:s=>(s.pomoToday||0)>=3,desc:'单日3轮番茄钟',bonus:8,dim:'DA'},
+    {id:'三日健身',ico:'🏃',tier:'常规',rule:s=>(s.bodyStreak||0)>=3,desc:'健身连击3天',bonus:8,dim:'BODY'},
+    {id:'塑形起手',ico:'🗿',tier:'常规',rule:s=>s.tasks.some(x=>x.done&&/塑形|分化|上肢|下肢|背|胸|腿|肩|臂|核心/.test(x.title)),desc:'完成一次塑形分化训练',bonus:6,dim:'BODY'},
+    {id:'跳跃启蒙',ico:'🦘',tier:'常规',rule:s=>s.tasks.some(x=>x.done&&/跳|plyo|爆发|冲刺|敏捷|跳绳|box\s*jump/i.test(x.title)),desc:'完成一次跑跳/爆发训练',bonus:6,dim:'BODY'},
+    {id:'国职备考',ico:'📖',tier:'常规',rule:s=>s.tasks.some(x=>x.done&&/国职|教练证|理论|实操|解剖|运动生理/.test(x.title)),desc:'完成一次新国职备考',bonus:8,dim:'BODY'},
+
+    // ————— 进阶级（需要专注/克制）—————
+    {id:'六连击',ico:'🔥',tier:'进阶',rule:s=>s.tasks.filter(x=>x.done).length>=6,desc:'单日完成6项',bonus:10,dim:'PM'},
+    {id:'破100',ico:'💯',tier:'进阶',rule:s=>calcTodayPts()>=100,desc:'单日积分破100',bonus:10,dim:'PM'},
+    {id:'数据神探',ico:'🕵️',tier:'进阶',rule:s=>s.tasks.find(x=>x.id==='T-104'&&x.done),desc:'完成数据分析',bonus:10,dim:'DA'},
+    {id:'六边形战士',ico:'🛡️',tier:'进阶',rule:s=>DIMS.every(d=>(s.cumu[d]||0)>=5),desc:'6个维度累计各≥5分',bonus:15,dim:'PM'},
+    {id:'深潜者',ico:'🌊',tier:'进阶',rule:s=>(s.pomoToday||0)>=5,desc:'单日专注5轮',bonus:15,dim:'DA'},
+    {id:'健身狂魔',ico:'🏋️',tier:'进阶',rule:s=>(s.bodyStreak||0)>=5,desc:'健身连击5天',bonus:20,dim:'BODY'},
+    {id:'弹跳达人',ico:'🚀',tier:'进阶',rule:s=>{const c=(s.tasks||[]).filter(x=>x.done&&/跳|plyo|爆发|冲刺/i.test(x.title)).length;return c>=2||(s.plyoWeek||0)>=3;},desc:'单日2次或本周3次跑跳训练',bonus:15,dim:'BODY'},
+    {id:'肌肉工匠',ico:'🧱',tier:'进阶',rule:s=>{const c=(s.tasks||[]).filter(x=>x.done&&/塑形|分化|上肢|下肢|背|胸|腿|肩|臂/.test(x.title)).length;return c>=2;},desc:'单日≥2次塑形分化',bonus:15,dim:'BODY'},
+    {id:'储蓄罐',ico:'🐷',tier:'进阶',rule:s=>(s.coin||0)>=100,desc:'星币首破100',bonus:10,dim:'RI'},
+
+    // ————— 精英级（多日累积）—————
+    {id:'首日全勤',ico:'🌟',tier:'精英',rule:s=>s.tasks.length>0&&s.tasks.every(x=>x.done),desc:'当日全部任务✅',bonus:20,dim:'PM'},
+    {id:'连击王',ico:'👑',tier:'精英',rule:s=>(s.streak||0)>=3,desc:'连续3日全勤',bonus:30,dim:'PM'},
+    {id:'健身教官',ico:'🥇',tier:'精英',rule:s=>(s.bodyStreak||0)>=10,desc:'健身连击10天',bonus:40,dim:'BODY'},
+    {id:'新国职通关',ico:'📜',tier:'精英',rule:s=>(s.skills||[]).some(x=>/新国职/.test(x.name)&&x.status==='done'),desc:'新国职教练证到手',bonus:50,dim:'BODY'},
+    {id:'级冠军',ico:'⭐',tier:'精英',rule:s=>DIMS.some(d=>(s.cumu[d]||0)>=100),desc:'任一维度升到 Lv1',bonus:25,dim:'PM'},
+
+    // ————— 传奇级（月度大关）—————
+    {id:'一周不间断',ico:'🏆',tier:'传奇',rule:s=>(s.streak||0)>=7,desc:'连续7日全勤',bonus:70,dim:'PM'},
+    {id:'金库',ico:'💰',tier:'传奇',rule:s=>(s.coin||0)>=500,desc:'累计星币破500',bonus:30,dim:'RI'},
+    {id:'马拉松',ico:'🎖️',tier:'传奇',rule:s=>(s.bodyStreak||0)>=30,desc:'健身连击30天',bonus:100,dim:'BODY'},
+  ];
+
+  const SHOP = [
+    // ════════ 味蕾 · 吃是最直接的正反馈 (22) ════════
+    {id:'steak',ico:'🥩',name:'牛排大餐',cost:100,cond:s=>s.bodyStreak>=3,desc:'健身连击≥3天 → 高蛋白犒赏',cat:'味蕾'},
+    {id:'late-snack',ico:'🍜',name:'吃一顿宵夜',cost:60,cond:s=>s.bodyStreak>=2,desc:'健身≥2天 → 深夜碳水治愈',cat:'味蕾'},
+    {id:'hotpot',ico:'🫕',name:'约人吃一顿火锅',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 沸腾的快乐',cat:'味蕾'},
+    {id:'omakase',ico:'🍣',name:'一顿好的日料/Omakase',cost:300,cond:s=>s.streak>=7,desc:'连击≥7天 → 味觉天花板',cat:'味蕾'},
+    {id:'cooking',ico:'🍳',name:'做一顿fancy料理',cost:60,cond:s=>true,desc:'买好食材慢慢做',cat:'味蕾'},
+    {id:'dessert',ico:'🍰',name:'网红甜品外带',cost:40,cond:s=>true,desc:'甜的多巴胺',cat:'味蕾'},
+    {id:'brunch',ico:'🥐',name:'去吃一顿Brunch',cost:80,cond:s=>s.streak>=2,desc:'连击≥2天 → 周末慢节奏早午餐',cat:'味蕾'},
+    {id:'bbq-korean',ico:'🥓',name:'韩式烤肉吃到扶墙',cost:150,cond:s=>s.bodyStreak>=3,desc:'健身≥3天 → 蛋白质+碳水双杀',cat:'味蕾'},
+    {id:'ramen',ico:'🍜',name:'排一次网红拉面',cost:50,cond:s=>true,desc:'去打卡那家一直想去的店',cat:'味蕾'},
+    {id:'seafood',ico:'🦞',name:'海鲜大餐',cost:250,cond:s=>s.streak>=5,desc:'连击≥5天 → 龙虾/帝王蟹犒赏',cat:'味蕾'},
+    {id:'taco',ico:'🌮',name:'找一家地道的Taco/墨西哥菜',cost:80,cond:s=>true,desc:'异域风味探索',cat:'味蕾'},
+    {id:'afternoon-tea',ico:'🫖',name:'高级酒店下午茶',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 精致出片',cat:'味蕾'},
+    {id:'ice-cream',ico:'🍦',name:'探一家gelato/冰淇淋店',cost:30,cond:s=>true,desc:'夏日消暑必备',cat:'味蕾'},
+    {id:'food-market',ico:'🏪',name:'逛一次美食市集',cost:60,cond:s=>true,desc:'走走吃吃拍拍',cat:'味蕾'},
+    {id:'private-kitchen',ico:'🍷',name:'订一次私房菜',cost:350,cond:s=>s.streak>=7,desc:'连击≥7天 → 小众体验',cat:'味蕾'},
+    {id:'bake',ico:'🧁',name:'自己烤一次蛋糕/面包',cost:50,cond:s=>true,desc:'揉面的治愈感',cat:'味蕾'},
+    {id:'coffee-beans',ico:'☕',name:'买一包精品咖啡豆',cost:40,cond:s=>true,desc:'尝试新产区风味',cat:'味蕾'},
+    {id:'fruit-box',ico:'🍑',name:'买一箱当季水果',cost:30,cond:s=>true,desc:'时令鲜甜犒赏',cat:'味蕾'},
+    {id:'cheese-wine',ico:'🧀',name:'芝士+红酒之夜',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 微醺配浓郁',cat:'味蕾'},
+    {id:'dim-sum',ico:'🥟',name:'去喝一次早茶',cost:60,cond:s=>true,desc:'虾饺烧卖叉烧包一桌',cat:'味蕾'},
+    {id:'wagyu',ico:'🥩',name:'和牛烧肉一顿',cost:400,cond:s=>s.streak>=10,desc:'连击≥10天 → A5雪花犒赏',cat:'味蕾'},
+    {id:'cooking-class',ico:'👨‍🍳',name:'上一次烹饪课',cost:150,cond:s=>s.streak>=3,desc:'连击≥3天 → 学一道新菜',cat:'味蕾'},
+    // ════════ 微醺 · 阶梯式放纵 (20) ════════
+    {id:'beer-home',ico:'🍻',name:'在家开一罐冰啤',cost:30,cond:s=>true,desc:'沙发+冰啤+短剧三件套',cat:'微醺'},
+    {id:'beer-new',ico:'🍺',name:'买几瓶新口味尝鲜',cost:80,cond:s=>s.streak>=2,desc:'连击≥2天 → 选两瓶没喝过的',cat:'微醺'},
+    {id:'beer-bar',ico:'🍸',name:'去精酿吧坐坐',cost:150,cond:s=>s.streak>=5,desc:'连击≥5天 → 吧台聊天喝手工精酿',cat:'微醺'},
+    {id:'beer-rooftop',ico:'🌃',name:'高空酒吧看夜景',cost:250,cond:s=>s.streak>=7&&(s.cumu.RI||0)>=30,desc:'连击≥7 + 收入≥30 → 俯瞰城市',cat:'微醺'},
+    {id:'whisky',ico:'🥃',name:'开一瓶好威士忌',cost:200,cond:s=>s.streak>=7,desc:'连击≥7天 → 纯饮一杯纪念',cat:'微醺'},
+    {id:'sake',ico:'🍶',name:'尝一支清酒/果酒',cost:60,cond:s=>true,desc:'微甜入口 → 低门槛微醺',cat:'微醺'},
+    {id:'wine-tasting',ico:'🍷',name:'参加一次品酒会',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 闻香识酒',cat:'微醺'},
+    {id:'cocktail-diy',ico:'🧉',name:'在家调一杯鸡尾酒',cost:40,cond:s=>true,desc:'买个摇酒器玩调酒',cat:'微醺'},
+    {id:'speakeasy',ico:'🚪',name:'探一家隐藏酒吧',cost:180,cond:s=>s.streak>=5,desc:'连击≥5天 → 找暗门那种',cat:'微醺'},
+    {id:'beer-festival',ico:'🎪',name:'去一次啤酒节/市集',cost:150,cond:s=>s.streak>=3,desc:'连击≥3天 → 一次喝遍十几种',cat:'微醺'},
+    {id:'natural-wine',ico:'🌿',name:'尝一瓶自然酒',cost:100,cond:s=>s.streak>=3,desc:'连击≥3天 → 不一样的风味',cat:'微醺'},
+    {id:'champagne',ico:'🥂',name:'开一瓶香槟庆祝',cost:300,cond:s=>s.streak>=10,desc:'连击≥10天 → 给自己的仪式',cat:'微醺'},
+    {id:'brewery-tour',ico:'🏭',name:'参观一次精酿酒厂',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 看酿造过程',cat:'微醺'},
+    {id:'hot-wine',ico:'🫖',name:'冬天来一杯热红酒',cost:30,cond:s=>true,desc:'肉桂+橙皮+暖意',cat:'微醺'},
+    {id:'gin-tonic',ico:'🫒',name:'探索不同风味金汤力',cost:60,cond:s=>true,desc:'买三瓶不同gin搭配',cat:'微醺'},
+    {id:'izakaya',ico:'🏮',name:'去居酒屋喝到微醺',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 串烧+啤酒+夜话',cat:'微醺'},
+    {id:'rum',ico:'🍹',name:'尝一杯好朗姆',cost:80,cond:s=>true,desc:'热带感的甜蜜',cat:'微醺'},
+    {id:'wine-pair',ico:'🍽️',name:'一次餐酒搭配体验',cost:350,cond:s=>s.streak>=7,desc:'连击≥7天 → 每道菜配一杯',cat:'微醺'},
+    {id:'mead',ico:'🍯',name:'买一瓶蜂蜜酒尝鲜',cost:50,cond:s=>true,desc:'维京人喝的那种',cat:'微醺'},
+    {id:'sunset-drink',ico:'🌅',name:'看着日落喝一杯',cost:40,cond:s=>true,desc:'天台/海边+任意一杯',cat:'微醺'},
+    // ════════ 放松 · 身体层面的松弛 (22) ════════
+    {id:'massage',ico:'💆',name:'按摩 SPA 松解',cost:180,cond:s=>s.bodyStreak>=5,desc:'健身连击≥5天 → 肌肉深度放松',cat:'放松'},
+    {id:'hot-spring',ico:'♨️',name:'周末泡汤泉',cost:250,cond:s=>s.bodyStreak>=7,desc:'健身连击≥7天 → 泡温泉修复',cat:'放松'},
+    {id:'ice-bath',ico:'🧊',name:'来一次冰浴',cost:120,cond:s=>s.bodyStreak>=4,desc:'健身≥4天 → 冷水刺激多巴胺',cat:'放松'},
+    {id:'float-tank',ico:'🫧',name:'去一次漂浮舱',cost:180,cond:s=>s.streak>=5,desc:'连击≥5天 → 零重力放空60分钟',cat:'放松'},
+    {id:'long-bath',ico:'🛁',name:'泡一个40分钟热水澡',cost:30,cond:s=>true,desc:'热水+浴盐+啥也不想',cat:'放松'},
+    {id:'couch',ico:'🛋️',name:'在家葛优躺半天',cost:80,cond:s=>s.streak>=5,desc:'连击≥5天 → 彻底躺平',cat:'放松'},
+    {id:'lazy-morning',ico:'😴',name:'周末睡到自然醒',cost:80,cond:s=>s.streak>=3,desc:'连击≥3天 → 关掉闹钟',cat:'放松'},
+    {id:'nap',ico:'💤',name:'午后小睡30分钟',cost:20,cond:s=>(s.tasks||[]).filter(x=>x.done).length>=3,desc:'完成≥3项 → 理直气壮补一觉',cat:'放松'},
+    {id:'foot-massage',ico:'🦶',name:'去做一次足浴',cost:80,cond:s=>s.streak>=2,desc:'连击≥2天 → 泡脚+按摩1.5h',cat:'放松'},
+    {id:'sauna',ico:'🧖',name:'蒸一次桑拿',cost:100,cond:s=>s.bodyStreak>=3,desc:'健身≥3天 → 汗蒸排毒',cat:'放松'},
+    {id:'meditation-class',ico:'🧘',name:'上一次冥想课',cost:60,cond:s=>true,desc:'正念30分钟 → 大脑重启',cat:'放松'},
+    {id:'yoga-class',ico:'🧘‍♂️',name:'去一次瑜伽课',cost:80,cond:s=>true,desc:'拉伸+呼吸 → 身体通透',cat:'放松'},
+    {id:'sound-bath',ico:'🔔',name:'体验一次颂钵/声音浴',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 声波疗愈',cat:'放松'},
+    {id:'hammock',ico:'🌴',name:'找个地方躺吊床发呆',cost:30,cond:s=>true,desc:'公园/民宿阳台晃一下午',cat:'放松'},
+    {id:'digital-detox',ico:'📵',name:'关手机半天数字断联',cost:50,cond:s=>s.streak>=3,desc:'连击≥3天 → 物理隔离焦虑',cat:'放松'},
+    {id:'hotel-staycation',ico:'🏨',name:'住一晚城市酒店Staycation',cost:400,cond:s=>s.streak>=7,desc:'连击≥7天 → 不出城的度假',cat:'放松'},
+    {id:'aroma-massage',ico:'🌸',name:'精油芳疗按摩',cost:200,cond:s=>s.bodyStreak>=5,desc:'健身≥5天 → 香薰+推拿',cat:'放松'},
+    {id:'cat-cafe',ico:'🐱',name:'去撸猫咖坐一下午',cost:50,cond:s=>true,desc:'毛茸茸治愈力',cat:'放松'},
+    {id:'reading-day',ico:'📚',name:'整天只看书不工作',cost:60,cond:s=>s.streak>=3,desc:'连击≥3天 → 给脑子换个频道',cat:'放松'},
+    {id:'nature-sit',ico:'🌳',name:'找棵大树底下坐一小时',cost:20,cond:s=>true,desc:'看云/听风/什么都不做',cat:'放松'},
+    {id:'sleep-mask',ico:'🌙',name:'戴眼罩9点就睡',cost:20,cond:s=>(s.tasks||[]).filter(x=>x.done).length>=4,desc:'完成≥4项 → 奖自己早睡',cat:'放松'},
+    {id:'heated-eye',ico:'👁️',name:'蒸汽眼罩敷20分钟',cost:15,cond:s=>true,desc:'对抗屏幕疲劳',cat:'放松'},
+    // ════════ 社交 · 人是群居动物 (20) ════════
+    {id:'texas',ico:'🃏',name:'出去打一次德州',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 牌桌社交',cat:'社交'},
+    {id:'escape-room',ico:'🔑',name:'约人密室逃脱',cost:150,cond:s=>(s.tasks||[]).filter(x=>x.done).length>=5,desc:'当日完成≥5项 → 用脑过度奖',cat:'社交'},
+    {id:'board-game',ico:'🎲',name:'桌游/剧本杀一场',cost:100,cond:s=>s.streak>=3,desc:'连击≥3天 → 角色扮演放松',cat:'社交'},
+    {id:'bbq',ico:'🔥',name:'约朋友户外烧烤',cost:130,cond:s=>s.streak>=5,desc:'连击≥5天 → 烟火气社交',cat:'社交'},
+    {id:'karaoke',ico:'🎙️',name:'KTV嗨唱一晚',cost:100,cond:s=>s.streak>=3,desc:'连击≥3天 → 释放全部压力',cat:'社交'},
+    {id:'pool',ico:'🎱',name:'去打一场台球',cost:60,cond:s=>true,desc:'安静的对抗社交',cat:'社交'},
+    {id:'frisbee',ico:'🥏',name:'约一场飞盘局',cost:60,cond:s=>s.bodyStreak>=2,desc:'健身≥2天 → 跑+社交',cat:'社交'},
+    {id:'basketball',ico:'🏀',name:'约人打一场篮球',cost:50,cond:s=>s.bodyStreak>=2,desc:'健身≥2天 → 球场汗水',cat:'社交'},
+    {id:'badminton',ico:'🏸',name:'打一次羽毛球',cost:40,cond:s=>true,desc:'门槛最低的运动社交',cat:'社交'},
+    {id:'pickleball',ico:'🎾',name:'试一次匹克球',cost:80,cond:s=>s.streak>=2,desc:'连击≥2天 → 2026最潮运动',cat:'社交'},
+    {id:'dinner-party',ico:'🍽️',name:'办一次家宴/请朋友来家吃',cost:150,cond:s=>s.streak>=5,desc:'连击≥5天 → 主人翁社交',cat:'社交'},
+    {id:'night-market',ico:'🏮',name:'约人逛夜市',cost:50,cond:s=>true,desc:'边走边吃边聊',cat:'社交'},
+    {id:'workshop',ico:'🎨',name:'约人一起上手作课',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 陶艺/花艺/皮具',cat:'社交'},
+    {id:'camping-group',ico:'⛺',name:'约朋友露营一晚',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 帐篷+篝火+星空',cat:'社交'},
+    {id:'volunteer',ico:'🤝',name:'参加一次公益/志愿者',cost:80,cond:s=>s.streak>=3,desc:'连击≥3天 → 付出型快乐',cat:'社交'},
+    {id:'potluck',ico:'🍲',name:'组织一次Potluck聚餐',cost:80,cond:s=>s.streak>=3,desc:'连击≥3天 → 每人带一道菜',cat:'社交'},
+    {id:'tennis',ico:'🎾',name:'约一场网球/红土网球',cost:80,cond:s=>s.bodyStreak>=2,desc:'健身≥2天 → 优雅暴汗',cat:'社交'},
+    {id:'go-chess',ico:'♟️',name:'约人下一盘棋',cost:40,cond:s=>true,desc:'围棋/象棋/国际象棋',cat:'社交'},
+    {id:'movie-night',ico:'🎬',name:'约人包一次私人影院',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 沙发+投影+零食',cat:'社交'},
+    {id:'comedy-club',ico:'😂',name:'去开放麦/脱口秀现场',cost:80,cond:s=>true,desc:'现场笑的力量',cat:'社交'},
+    // ════════ 感官 · 视觉/听觉/触觉/嗅觉 (22) ════════
+    {id:'sunset',ico:'🌅',name:'追一次日落',cost:30,cond:s=>true,desc:'找个天台/海边拍日落',cat:'感官'},
+    {id:'cafe-hop',ico:'☕',name:'探一家特色咖啡店',cost:50,cond:s=>true,desc:'出片+尝风味豆',cat:'感官'},
+    {id:'night-run',ico:'🌃',name:'夜跑拍城市夜景',cost:40,cond:s=>s.bodyStreak>=2,desc:'健身≥2天 → 跑完拍一张',cat:'感官'},
+    {id:'film-photo',ico:'📸',name:'拍一卷胶片',cost:80,cond:s=>true,desc:'慢下来的仪式感',cat:'感官'},
+    {id:'live-show',ico:'🎤',name:'看一场 Live/脱口秀',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 笑一晚上',cat:'感官'},
+    {id:'aquarium',ico:'🐠',name:'去水族馆看鱼发呆',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 治愈模式',cat:'感官'},
+    {id:'candle-night',ico:'🕯️',name:'点蜡烛听黑胶',cost:40,cond:s=>true,desc:'关手机一小时纯感官',cat:'感官'},
+    {id:'drama',ico:'📺',name:'看1小时短剧不愧疚',cost:50,cond:s=>true,desc:'短剧充电',cat:'感官'},
+    {id:'picnic',ico:'🧺',name:'公园野餐',cost:100,cond:s=>s.streak>=3,desc:'连击≥3天 → 铺张野餐垫出片',cat:'感官'},
+    {id:'museum',ico:'🏛️',name:'去一次美术馆/博物馆',cost:60,cond:s=>true,desc:'视觉+脑力充电',cat:'感官'},
+    {id:'vinyl-shop',ico:'🎵',name:'逛一次唱片店',cost:50,cond:s=>true,desc:'淘一张黑胶带回家',cat:'感官'},
+    {id:'planetarium',ico:'🌌',name:'去一次天文馆/看星空',cost:80,cond:s=>s.streak>=2,desc:'连击≥2天 → 宇宙尺度放松',cat:'感官'},
+    {id:'flower-market',ico:'💐',name:'逛花市买一束花',cost:30,cond:s=>true,desc:'鲜花在桌上的视觉治愈',cat:'感官'},
+    {id:'pottery',ico:'🏺',name:'去做一次陶艺',cost:120,cond:s=>s.streak>=3,desc:'连击≥3天 → 双手沾泥的心流',cat:'感官'},
+    {id:'calligraphy',ico:'✒️',name:'写一小时毛笔字',cost:30,cond:s=>true,desc:'墨香+专注 → 脑子清空',cat:'感官'},
+    {id:'incense',ico:'🪔',name:'点一炉香静坐',cost:25,cond:s=>true,desc:'檀香/沉香 → 嗅觉冥想',cat:'感官'},
+    {id:'concert-classical',ico:'🎻',name:'听一场古典音乐会',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 高雅感官体验',cat:'感官'},
+    {id:'bookstore',ico:'📖',name:'在独立书店泡一下午',cost:40,cond:s=>true,desc:'纸张的触感+咖啡',cat:'感官'},
+    {id:'stargazing',ico:'⭐',name:'找个暗处看一次星空',cost:40,cond:s=>true,desc:'远离城市光污染',cat:'感官'},
+    {id:'sunrise-photo',ico:'📷',name:'5点起来拍晨光',cost:50,cond:s=>s.streak>=2,desc:'连击≥2天 → 金色光线出片',cat:'感官'},
+    {id:'rain-listen',ico:'🌧️',name:'找个地方听一场雨',cost:20,cond:s=>true,desc:'雨声白噪音现场版',cat:'感官'},
+    {id:'night-drive',ico:'🚗',name:'深夜兜风听歌',cost:40,cond:s=>true,desc:'空旷马路+喜欢的歌单',cat:'感官'},
+    // ════════ 户外打卡 · 新鲜体验+肾上腺素 (28) ════════
+    {id:'rock-climb',ico:'🧗',name:'去攀岩馆攀一次',cost:100,cond:s=>s.bodyStreak>=3,desc:'健身≥3天 → 垂直方向的力量',cat:'户外打卡'},
+    {id:'outdoor-climb',ico:'⛰️',name:'户外自然岩壁攀岩',cost:250,cond:s=>(s.cumu.BODY||0)>=80,desc:'体魄≥80 → 真正的岩石触感',cat:'户外打卡'},
+    {id:'bouldering',ico:'🪨',name:'抱石体验',cost:80,cond:s=>s.bodyStreak>=2,desc:'健身≥2天 → 不用绳索的攀爬',cat:'户外打卡'},
+    {id:'sup',ico:'🏄',name:'桨板SUP体验',cost:120,cond:s=>s.bodyStreak>=3,desc:'健身≥3天 → 站在水面上的平衡',cat:'户外打卡'},
+    {id:'kayak',ico:'🛶',name:'皮划艇半日游',cost:150,cond:s=>s.bodyStreak>=3,desc:'健身≥3天 → 划桨看风景',cat:'户外打卡'},
+    {id:'paraglide',ico:'🪂',name:'滑翔伞体验飞行',cost:500,cond:s=>(s.cumu.BODY||0)>=100,desc:'体魄≥100 → 人生至少飞一次',cat:'户外打卡'},
+    {id:'trail-run',ico:'🏃',name:'山地越野跑',cost:60,cond:s=>s.bodyStreak>=4,desc:'健身≥4天 → 林间土路释放',cat:'户外打卡'},
+    {id:'road-cycling',ico:'🚴',name:'公路骑行50km',cost:80,cond:s=>s.bodyStreak>=3,desc:'健身≥3天 → 风从耳边过',cat:'户外打卡'},
+    {id:'night-hike',ico:'🌙',name:'夜徒/夜爬',cost:60,cond:s=>s.bodyStreak>=2,desc:'健身≥2天 → 头灯+星空+未知',cat:'户外打卡'},
+    {id:'rappelling',ico:'⬇️',name:'崖降体验',cost:200,cond:s=>(s.cumu.BODY||0)>=60,desc:'体魄≥60 → 垂直下降的刺激',cat:'户外打卡'},
+    {id:'ice-climb',ico:'🧊',name:'攀冰体验',cost:300,cond:s=>(s.cumu.BODY||0)>=120,desc:'体魄≥120 → 冰镐+冰爪极限挑战',cat:'户外打卡'},
+    {id:'via-ferrata',ico:'🔗',name:'飞拉达铁道攀登',cost:180,cond:s=>s.bodyStreak>=4,desc:'健身≥4天 → 悬崖栈道冒险',cat:'户外打卡'},
+    {id:'zipline',ico:'🏗️',name:'丛林飞跃/高空溜索',cost:150,cond:s=>s.streak>=3,desc:'连击≥3天 → 尖叫+失重',cat:'户外打卡'},
+    {id:'surf',ico:'🏄‍♂️',name:'去冲一次浪',cost:200,cond:s=>(s.cumu.BODY||0)>=60,desc:'体魄≥60 → 站上浪尖的成就感',cat:'户外打卡'},
+    {id:'diving-fun',ico:'🤿',name:'约一次潜水 Trip',cost:600,cond:s=>(s.cumu.BODY||0)>=150,desc:'体魄≥150 → 海底世界',cat:'户外打卡'},
+    {id:'wakeboard',ico:'🚤',name:'尾波冲浪/滑水',cost:250,cond:s=>(s.cumu.BODY||0)>=80,desc:'体魄≥80 → 水上极限',cat:'户外打卡'},
+    {id:'horse-riding',ico:'🐎',name:'骑一次马',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 草原/马场体验',cat:'户外打卡'},
+    {id:'archery',ico:'🏹',name:'去射一次箭',cost:80,cond:s=>true,desc:'专注+释放 → 脱靶也开心',cat:'户外打卡'},
+    {id:'go-kart',ico:'🏎️',name:'卡丁车飙一圈',cost:100,cond:s=>s.streak>=2,desc:'连击≥2天 → 合法飙车',cat:'户外打卡'},
+    {id:'skydive2',ico:'✈️',name:'跳一次伞',cost:700,cond:s=>(s.cumu.BODY||0)>=200,desc:'体魄≥200 → 极限体验解锁',cat:'户外打卡'},
+    {id:'bungee',ico:'🪢',name:'蹦极一次',cost:500,cond:s=>(s.cumu.BODY||0)>=150,desc:'体魄≥150 → 自由落体的勇气',cat:'户外打卡'},
+    {id:'sunrise-hike',ico:'🌄',name:'5点起来爬山看日出',cost:60,cond:s=>s.bodyStreak>=3,desc:'健身≥3天 → 给自己一个震撼',cat:'户外打卡'},
+    {id:'city-walk',ico:'🚶',name:'City Walk 随便逛',cost:40,cond:s=>true,desc:'走到哪算哪',cat:'户外打卡'},
+    {id:'camping-solo',ico:'🏕️',name:'一个人野营一晚',cost:150,cond:s=>s.streak>=5,desc:'连击≥5天 → 独处+自然',cat:'户外打卡'},
+    {id:'sand-board',ico:'🏜️',name:'沙漠滑沙',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 西北荒野体验',cat:'户外打卡'},
+    {id:'canyoning',ico:'💧',name:'溪降体验',cost:250,cond:s=>(s.cumu.BODY||0)>=80,desc:'体魄≥80 → 瀑布+绳降+游泳',cat:'户外打卡'},
+    {id:'kitesurfing',ico:'🪁',name:'风筝冲浪入门课',cost:400,cond:s=>(s.cumu.BODY||0)>=100,desc:'体魄≥100 → 风+浪+极限',cat:'户外打卡'},
+    {id:'mountain-bike',ico:'🚵',name:'山地越野骑行',cost:120,cond:s=>s.bodyStreak>=4,desc:'健身≥4天 → 颠簸中的快感',cat:'户外打卡'},
+    // ════════ 生活升级 · 提高品质的长期投资 (24) ════════
+    {id:'coffee-machine',ico:'☕',name:'入一台咖啡机',cost:600,cond:s=>s.streak>=14,desc:'连击≥14天 → 每天的仪式感升级',cat:'生活升级'},
+    {id:'robot-vacuum',ico:'🤖',name:'入一台扫地机器人',cost:500,cond:s=>s.streak>=10,desc:'连击≥10天 → 解放双手',cat:'生活升级'},
+    {id:'projector',ico:'📽️',name:'入一台投影仪',cost:600,cond:s=>s.streak>=14,desc:'连击≥14天 → 家庭影院升级',cat:'生活升级'},
+    {id:'speaker',ico:'🔊',name:'入一对好音箱',cost:400,cond:s=>s.streak>=7,desc:'连击≥7天 → 耳朵的犒赏',cat:'生活升级'},
+    {id:'ergonomic-chair',ico:'🪑',name:'入一把人体工学椅',cost:800,cond:s=>s.streak>=14,desc:'连击≥14天 → 腰的救赎',cat:'生活升级'},
+    {id:'standing-desk',ico:'🖥️',name:'入一张升降桌',cost:700,cond:s=>s.streak>=14,desc:'连击≥14天 → 站坐交替更健康',cat:'生活升级'},
+    {id:'kindle',ico:'📱',name:'入一台电子阅读器',cost:300,cond:s=>(s.cumu.TM||0)>=50,desc:'认知≥50 → 随时读书',cat:'生活升级'},
+    {id:'headphones',ico:'🎧',name:'入一副好耳机',cost:500,cond:s=>s.streak>=10,desc:'连击≥10天 → 降噪的世界',cat:'生活升级'},
+    {id:'air-fryer',ico:'🍟',name:'入一台空气炸锅',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 健康炸物自由',cat:'生活升级'},
+    {id:'water-filter',ico:'💧',name:'升级净水系统',cost:400,cond:s=>s.streak>=7,desc:'连击≥7天 → 喝水也有品质',cat:'生活升级'},
+    {id:'smart-watch',ico:'⌚',name:'入一块运动手表',cost:500,cond:s=>(s.cumu.BODY||0)>=100,desc:'体魄≥100 → 数据化训练',cat:'生活升级'},
+    {id:'yoga-mat',ico:'🧘',name:'入一张好的瑜伽垫',cost:150,cond:s=>s.bodyStreak>=5,desc:'健身≥5天 → 地面训练升级',cat:'生活升级'},
+    {id:'foam-roller',ico:'🧱',name:'入一套筋膜枪+泡沫轴',cost:250,cond:s=>s.bodyStreak>=7,desc:'健身≥7天 → 恢复装备到位',cat:'生活升级'},
+    {id:'resistance-bands',ico:'🏋️',name:'入一套弹力带',cost:100,cond:s=>s.bodyStreak>=3,desc:'健身≥3天 → 随身训练工具',cat:'生活升级'},
+    {id:'sleep-tracker',ico:'😴',name:'入一个睡眠监测器',cost:300,cond:s=>s.streak>=7,desc:'连击≥7天 → 量化睡眠质量',cat:'生活升级'},
+    {id:'plant',ico:'🌱',name:'买一棵好养的绿植',cost:60,cond:s=>true,desc:'桌面/阳台的生命力',cat:'生活升级'},
+    {id:'desk-lamp',ico:'💡',name:'入一盏护眼台灯',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 对眼睛好一点',cat:'生活升级'},
+    {id:'humidifier',ico:'💨',name:'入一台加湿器/香薰机',cost:150,cond:s=>s.streak>=3,desc:'连击≥3天 → 空间氛围升级',cat:'生活升级'},
+    {id:'travel-bag',ico:'🎒',name:'入一个好背包',cost:350,cond:s=>s.streak>=7,desc:'连击≥7天 → 通勤/出行体验升级',cat:'生活升级'},
+    {id:'sunglasses',ico:'🕶️',name:'入一副好墨镜',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 户外出片利器',cat:'生活升级'},
+    {id:'towel-set',ico:'🛁',name:'换一套高品质毛巾浴巾',cost:100,cond:s=>s.streak>=3,desc:'连击≥3天 → 触觉幸福感',cat:'生活升级'},
+    {id:'pillow',ico:'🛏️',name:'入一个好枕头',cost:200,cond:s=>s.streak>=5,desc:'连击≥5天 → 睡眠品质跃升',cat:'生活升级'},
+    {id:'bottle',ico:'🫗',name:'入一个好看的保温杯',cost:80,cond:s=>true,desc:'每天多喝水的动力',cat:'生活升级'},
+    {id:'electric-toothbrush',ico:'🪥',name:'入一把电动牙刷',cost:150,cond:s=>s.streak>=3,desc:'连击≥3天 → 牙齿护理升级',cat:'生活升级'},
+    // ════════ 仪式感 · 心理层面的犒赏 (22) ════════
+    {id:'fragrance',ico:'🧴',name:'买一瓶新香水',cost:150,cond:s=>s.streak>=5,desc:'连击≥5天 → 嗅觉buff',cat:'仪式感'},
+    {id:'gift',ico:'🎁',name:'买一个喜欢的小东西',cost:200,cond:s=>(s.cumu.PM+s.cumu.DA+s.cumu.TL+s.cumu.TM)>=100,desc:'工作累计≥100 → 给自己一个奖',cat:'仪式感'},
+    {id:'summer-fit',ico:'👕',name:'买一件夏季服饰',cost:180,cond:s=>s.cumu.BODY>=50,desc:'体魄≥50 → 奖新衣显肌肉',cat:'仪式感'},
+    {id:'sneakers',ico:'👟',name:'入一双心水的鞋',cost:500,cond:s=>s.streak>=7,desc:'连击≥7天 → 脚上的奖励',cat:'仪式感'},
+    {id:'sports-gear',ico:'🏋️',name:'入一件运动装备',cost:350,cond:s=>(s.cumu.BODY||0)>=80,desc:'体魄累计≥80 → 奖自己好装备',cat:'仪式感'},
+    {id:'guozhi-reward',ico:'🎓',name:'新国职考完大餐',cost:200,cond:s=>(s.skills||[]).some(x=>/新国职/.test(x.name)&&x.status==='done'),desc:'教练证到手 → 大吃犒赏',cat:'仪式感'},
+    {id:'concert',ico:'🎵',name:'看一场演唱会/音乐节',cost:500,cond:s=>(s.streak||0)>=7&&(s.cumu.RI||0)>=50,desc:'连击≥7 + 收入≥50',cat:'仪式感'},
+    {id:'travel',ico:'🏝️',name:'周边短途游',cost:800,cond:s=>s.streak>=10,desc:'连击≥10天 → 换个城市呼吸',cat:'仪式感'},
+    {id:'tattoo',ico:'🖋️',name:'纹一个小图案纪念',cost:300,cond:s=>s.streak>=14,desc:'连击≥14天 → 身体上的里程碑',cat:'仪式感'},
+    {id:'photo-print',ico:'🖼️',name:'打印一张照片装框',cost:50,cond:s=>true,desc:'把回忆挂在墙上',cat:'仪式感'},
+    {id:'letter-self',ico:'✉️',name:'给未来的自己写封信',cost:20,cond:s=>true,desc:'一年后打开看',cat:'仪式感'},
+    {id:'journal-new',ico:'📓',name:'入一本新手账/日记本',cost:60,cond:s=>true,desc:'新的记录新的开始',cat:'仪式感'},
+    {id:'custom-cup',ico:'🏆',name:'定制一个专属奖杯/徽章',cost:150,cond:s=>s.streak>=7,desc:'连击≥7天 → 实体化你的成就',cat:'仪式感'},
+    {id:'ring',ico:'💍',name:'入一枚好看的戒指',cost:300,cond:s=>s.streak>=10,desc:'连击≥10天 → 手上的仪式感',cat:'仪式感'},
+    {id:'new-hairstyle',ico:'💇',name:'换一个新发型',cost:100,cond:s=>s.streak>=3,desc:'连击≥3天 → 新造型新心情',cat:'仪式感'},
+    {id:'skincare',ico:'🧴',name:'入一套好的护肤品',cost:250,cond:s=>s.streak>=5,desc:'连击≥5天 → 对脸好一点',cat:'仪式感'},
+    {id:'portrait-photo',ico:'📸',name:'拍一组个人写真',cost:400,cond:s=>s.streak>=10&&(s.cumu.BODY||0)>=50,desc:'连击≥10 + 体魄≥50 → 记录好状态',cat:'仪式感'},
+    {id:'donate',ico:'❤️',name:'给喜欢的创作者打赏',cost:50,cond:s=>true,desc:'支持喜欢的内容',cat:'仪式感'},
+    {id:'name-star',ico:'⭐',name:'以自己名字命名一颗星',cost:200,cond:s=>s.streak>=7,desc:'连击≥7天 → 浪漫的纪念',cat:'仪式感'},
+    {id:'capsule-open',ico:'📦',name:'打开一个时间胶囊',cost:100,cond:s=>s.streak>=14,desc:'连击≥14天 → 和过去的自己对话',cat:'仪式感'},
+    {id:'gratitude',ico:'🙏',name:'给重要的人发一段感谢',cost:20,cond:s=>true,desc:'表达让关系升温',cat:'仪式感'},
+    {id:'bucket-list',ico:'📋',name:'完成人生清单一项',cost:100,cond:s=>s.streak>=7,desc:'连击≥7天 → 划掉一项很爽',cat:'仪式感'},
+  ];
+
+  const today = () => new Date().toISOString().slice(0,10);
+  function todayCn(){ return new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'}); }
+
+  function defaultState(){
+    return {
+      date: today(), tpl: DEFAULT_TPL, tasks: parseTpl(DEFAULT_TPL),
+      cumu:{PM:0,DA:0,TL:0,TM:0,RI:0,BODY:0},
+      badges:{}, todayBadges:{}, log:[], history:{},
+      streak:0, bodyStreak:0, coin:0, coinSpent:0, inventory:[],
+      note:'',
+      skills: DEFAULT_SKILLS.slice(),
+      customRewards: [],
+      pomo:{total:0,todayCnt:0,todayDate:today(),running:false,remain:1500,mode:'work',workMin:25,breakMin:10,bindId:null,hoursSec:0,log:[]},
+      lastAction:null,
+      cfg:{sfx:false,pop:true,light:false},
+    };
+  }
+
+  function parseTpl(tpl){
+    return tpl.split('\n').filter(l=>l.trim()).map(l=>{
+      const [id,group,title,desc,pts,dims] = l.split('|').map(x=>x.trim());
+      const d = {};
+      (dims||'').split(',').forEach(kv=>{
+        const [k,v] = kv.split(':');
+        if (k&&v) d[k.trim()] = parseInt(v);
+      });
+      return {id,group,title,desc,pts:parseInt(pts)||0,dims:d,done:false,doneAt:null};
+    });
+  }
+
+  let S = null;
+  function load(){
+    try { S = JSON.parse(localStorage.getItem(KEY)) || defaultState(); }
+    catch(e){ S = defaultState(); }
+    const d = defaultState();
+    for (const k of Object.keys(d)) if (S[k]===undefined) S[k]=d[k];
+    if (!S.pomo) S.pomo = d.pomo;
+    if (!S.skills || !S.skills.length) S.skills = DEFAULT_SKILLS.slice(); // 首次升级回填技能
+    if (!S.customRewards) S.customRewards = [];
+    if (S.pomo.todayDate !== today()){ S.pomo.todayCnt=0; S.pomo.todayDate=today(); }
+    if (S.date !== today()){
+      settleDay(S.date);
+      S.date = today();
+      S.tasks = parseTpl(S.tpl || DEFAULT_TPL);
+      S.todayBadges = {};
+      S.note = '';
+    }
+    save();
+  }
+  function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+
+  function settleDay(dateKey){
+    const done = S.tasks.filter(x=>x.done);
+    const doneCount = done.length;
+    const pts = done.reduce((a,b)=>a+b.pts,0) + Object.values(S.todayBadges||{}).reduce((a,b)=>a+b,0);
+    const dims = {};
+    done.forEach(t=>{ for (const [k,v] of Object.entries(t.dims||{})) dims[k]=(dims[k]||0)+v; });
+    const allDone = doneCount>0 && doneCount===S.tasks.length;
+    const bodyDone = S.tasks.some(t=>t.group==='体魄线') && S.tasks.filter(t=>t.group==='体魄线').every(t=>t.done);
+    S.history[dateKey] = {
+      tasks: S.tasks.map(t=>({id:t.id,title:t.title,pts:t.pts,done:t.done,dims:t.dims,group:t.group})),
+      doneCount, total:S.tasks.length, pts, dims,
+      badges: Object.keys(S.todayBadges||{}),
+      note: S.note||'',
+    };
+    S.streak = allDone ? (S.streak||0)+1 : 0;
+    S.bodyStreak = bodyDone ? (S.bodyStreak||0)+1 : 0;
+  }
+
+  function toast(msg, kind){
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show'+(kind?' '+kind:'');
+    clearTimeout(el._t);
+    el._t = setTimeout(()=>el.className='toast', 2000);
+  }
+  function fmt(n){ return String(n).padStart(2,'0'); }
+  function beep(){
+    if (!S.cfg.sfx) return;
+    try{
+      const ac = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.frequency.value = 660; g.gain.value = 0.1;
+      o.start(); setTimeout(()=>{o.frequency.value=880;},80);
+      setTimeout(()=>{g.gain.value=0;o.stop();ac.close();},200);
+    }catch(e){}
+  }
+  function popBadge(b){
+    if (S.cfg.pop===false) return;
+    const el = document.getElementById('badgePop');
+    document.getElementById('bpIco').textContent = b.ico;
+    document.getElementById('bpTtl').textContent = b.id;
+    document.getElementById('bpSub').textContent = b.desc + ` · +${b.bonus} 分`;
+    el.classList.add('show');
+    setTimeout(()=>el.classList.remove('show'), 2500);
+  }
+  function pushLog(msg, gain){
+    const now = new Date();
+    const t = fmt(now.getHours())+':'+fmt(now.getMinutes());
+    S.log.push({t,msg,gain});
+    if (S.log.length>200) S.log.shift();
+  }
+
+  function renderAll(){
+    renderMeta(); renderTasks(); renderPanel(); renderBadges();
+    renderLog(); renderShop(); renderHistory(); renderPomo(); renderSettings();
+    document.getElementById('tabTodayCnt').textContent = S.tasks.filter(t=>!t.done).length;
+    document.getElementById('coinInHeader').textContent = S.coin;
+  }
+  function renderMeta(){
+    document.getElementById('meta').textContent = `${todayCn()} · 连击 ${S.streak} 天 · 健身连击 ${S.bodyStreak} 天 · 💰 ${S.coin}`;
+    document.getElementById('dailyNote').value = S.note||'';
+  }
+  function renderTasks(){
+    const box = document.getElementById('taskList');
+    box.innerHTML = '';
+    let cur = '';
+    S.tasks.forEach((t,idx)=>{
+      if (t.group !== cur){
+        cur = t.group;
+        const h = document.createElement('div'); h.className='task-group-title';
+        const groupPts = S.tasks.filter(x=>x.group===cur).reduce((a,b)=>a+b.pts,0);
+        const groupDone = S.tasks.filter(x=>x.group===cur&&x.done).reduce((a,b)=>a+b.pts,0);
+        h.textContent = `${cur} · ${groupDone}/${groupPts} 分`;
+        box.appendChild(h);
+      }
+      const el = document.createElement('div');
+      el.className = 'task'+(t.done?' done':'');
+      const dimTags = Object.entries(t.dims||{}).map(([k,v])=>`<span class="tag dim-${k}">${k}+${v}</span>`).join('');
+      const kbd = idx<9 ? `<span class="tag" style="opacity:.5">键 ${idx+1}</span>` : '';
+      el.innerHTML = `
+        <input type="checkbox" ${t.done?'checked':''} onchange="toggle('${t.id}')" />
+        <div class="body">
+          <div class="title">${t.id} · ${t.title}</div>
+          <div class="desc">${t.desc||''}</div>
+          <div class="tags">
+            <span class="tag pts">+${t.pts}分</span>
+            ${dimTags}${kbd}
+            <button class="task-btn" onclick="pomoStartWith('${t.id}')">🍅 专注</button>
+            <button class="task-btn" onclick="editTask('${t.id}')">✏️</button>
+            <button class="task-btn" onclick="removeTask('${t.id}')">🗑️</button>
+          </div>
+        </div>`;
+      box.appendChild(el);
+    });
+    const doneCount = S.tasks.filter(x=>x.done).length;
+    const total = S.tasks.length;
+    const todayPts = calcTodayPts();
+    document.getElementById('taskProgress').textContent = `${doneCount}/${total} · ${todayPts}分`;
+    document.getElementById('todayPts').textContent = todayPts;
+    document.getElementById('todayInfo').textContent = doneCount===total && total>0 ? '🎉 全勤 · 燃！' : `还剩 ${total-doneCount} 项`;
+    document.getElementById('streakDays').textContent = S.streak;
+    document.getElementById('bodyStreak').textContent = S.bodyStreak;
+
+    const sel = document.getElementById('pomoBind');
+    if (sel){
+      sel.innerHTML = '<option value="">（不绑定）</option>'+
+        S.tasks.filter(t=>!t.done).map(t=>`<option value="${t.id}" ${S.pomo.bindId===t.id?'selected':''}>${t.id} ${t.title}</option>`).join('');
+    }
+  }
+  function calcTodayPts(){
+    return S.tasks.filter(x=>x.done).reduce((a,b)=>a+b.pts,0)
+      + Object.values(S.todayBadges||{}).reduce((a,b)=>a+b,0);
+  }
+  function renderPanel(){
+    const total = Object.values(S.cumu).reduce((a,b)=>a+b,0);
+    const totalLv = Math.floor(total/100);
+    document.getElementById('totalTag').textContent = `总积分 ${total} · Lv${totalLv}`;
+    const html = DIMS.map(d=>{
+      const v = S.cumu[d]||0;
+      const pct = Math.min(100, (v%100));
+      const lv = Math.floor(v/100);
+      return `<div class="ability-row">
+        <span class="name">${DIM_LABEL[d]}</span>
+        <span class="bar"><span class="fill ${d}" style="width:${pct}%"></span></span>
+        <span class="val">Lv${lv} · ${v}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('abilityPanel').innerHTML = html;
+    const cbox = document.getElementById('cumuPanel');
+    if (cbox) cbox.innerHTML = html;
+    document.getElementById('coinTotal').textContent = S.coin;
+    document.getElementById('coinSpent').textContent = S.coinSpent;
+  }
+  function renderBadges(){
+    const bbox = document.getElementById('badgeBox');
+    // 分组显示：已解锁 + 未解锁按 tier 排序
+    const tiers = ['入门','常规','进阶','精英','传奇'];
+    const tierColor = {入门:'#94a3b8', 常规:'#7c9cff', 进阶:'#4dd6c4', 精英:'#c084fc', 传奇:'#fbbf24'};
+    const unlocked = BADGES.filter(b=>S.badges[b.id]);
+    const locked = BADGES.filter(b=>!S.badges[b.id]);
+    let html = '';
+    if (unlocked.length){
+      html += `<div style="font-size:11px;color:var(--sub);width:100%;margin-bottom:4px">✅ 已解锁 ${unlocked.length}/${BADGES.length}</div>`;
+      html += unlocked.map(b=>{
+        const c = tierColor[b.tier]||'#fbbf24';
+        return `<div class="badge unlocked" title="${b.desc} +${b.bonus} · [${b.tier}]" style="border-color:${c}">${b.ico} ${b.id} <span style="opacity:.7;font-size:10px">${b.tier}</span></div>`;
+      }).join('');
+    }
+    if (locked.length){
+      html += `<div style="font-size:11px;color:var(--sub);width:100%;margin:8px 0 4px">🔒 待解锁 ${locked.length}</div>`;
+      html += tiers.map(tier=>{
+        const arr = locked.filter(b=>b.tier===tier);
+        if (!arr.length) return '';
+        const c = tierColor[tier];
+        return arr.map(b=>`<div class="badge" title="${b.desc} +${b.bonus}" style="border-left:3px solid ${c};padding-left:8px">${b.ico} ${b.id} <span style="opacity:.6;font-size:10px">+${b.bonus}</span></div>`).join('');
+      }).join('');
+    }
+    bbox.innerHTML = html;
+    const abox = document.getElementById('allBadges');
+    if (abox){
+      abox.innerHTML = unlocked.length ? unlocked.map(b=>{
+        const c = tierColor[b.tier]||'#fbbf24';
+        return `<div class="badge unlocked" title="${b.desc} · 解锁于 ${S.badges[b.id]}" style="border-color:${c}">${b.ico} ${b.id} <span style="opacity:.7;font-size:10px">${b.tier}</span></div>`;
+      }).join('') : '<div class="empty">还没有解锁 · 加油！</div>';
+    }
+  }
+  function renderLog(){
+    const lbox = document.getElementById('logBox');
+    if (S.log.length===0){
+      lbox.innerHTML = '<div class="empty">还没有记录～勾一个任务试试</div>';
+    } else {
+      lbox.innerHTML = S.log.slice(-30).reverse().map(l=>
+        `<div><span class="ts">${l.t}</span>${l.msg}${l.gain>0?` <span class="gain">+${l.gain}</span>`:''}${l.gain<0?` <span class="loss">${l.gain}</span>`:''}</div>`
+      ).join('');
+    }
+  }
+  function shopItemCard(item){
+    const own = S.inventory.filter(x=>x.id===item.id).length;
+    const passed = item.cond ? item.cond(S) : true;
+    const canBuy = passed && S.coin>=item.cost;
+    const progress = Math.min(100, S.coin/item.cost*100);
+    return `<div class="shop-item ${own?'owned':''} ${!passed?'locked':''}">
+      <div class="icon">${item.ico}</div>
+      <div class="name">${item.name} <span class="tag" style="font-size:10px;margin-left:4px">${item.cat}</span></div>
+      <div class="cond">${item.desc||''}${own?` · <b style="color:var(--ok)">已兑 ${own} 次</b>`:''}</div>
+      <div class="cost">💰 ${item.cost} 星币${!passed?' · 🔒 未达条件':''}</div>
+      <div class="progress"><div class="p-fill" style="width:${progress}%"></div></div>
+      <button ${canBuy?'class="primary"':''} onclick="buy('${item.id}')" ${!canBuy?'disabled':''}>
+        ${canBuy?'✅ 兑换':(passed?'星币不足':'条件未达')}
+      </button>
+    </div>`;
+  }
+  // 精选推荐：用户最初几版中反复要求保留的「最爱」项，按趣味度排序
+  const FEATURED_IDS = [
+    'steak','late-snack','beer-home','beer-new','beer-bar','massage',
+    'hot-spring','texas','couch','lazy-morning','drama','live-show',
+    'rock-climb','sup','surf','ice-bath'
+  ];
+  function renderShop(){
+    const box = document.getElementById('shopGrid');
+    if (!box) return;
+    const allItems = SHOP.concat(S.customRewards||[]);
+    // 上方精选：固定推荐用户最喜爱的原版项目
+    const featuredSet = new Set(FEATURED_IDS);
+    const featured = FEATURED_IDS.map(id=>allItems.find(x=>x.id===id)).filter(Boolean);
+    box.innerHTML = featured.map(shopItemCard).join('');
+    // coin header
+    const coinH = document.getElementById('coinInHeader');
+    if (coinH) coinH.textContent = S.coin;
+    // full panel if open
+    renderFullShop();
+    renderCustomRewards();
+  }
+  let _shopCatFilter = 'all';
+  function toggleFullShop(){
+    const panel = document.getElementById('fullShopPanel');
+    if (!panel) return;
+    const show = panel.style.display === 'none';
+    panel.style.display = show ? 'block' : 'none';
+    document.getElementById('fullShopBtn').textContent = show ? '🎪 收起完整分类库' : '🎪 更多奖励 · 完整分类库';
+    if (show) { _shopCatFilter = 'all'; renderFullShop(); }
+  }
+  function renderFullShop(){
+    const panel = document.getElementById('fullShopPanel');
+    if (!panel || panel.style.display === 'none') return;
+    const allItems = SHOP.concat(S.customRewards||[]);
+    const cats = [...new Set(allItems.map(i=>i.cat))];
+    const tabs = document.getElementById('shopCatTabs');
+    if (tabs) tabs.innerHTML = [`<span class="tag${_shopCatFilter==='all'?' pts':''}" style="cursor:pointer" onclick="filterShopCat('all')">全部</span>`].concat(
+      cats.map(c=>`<span class="tag${_shopCatFilter===c?' pts':''}" style="cursor:pointer" onclick="filterShopCat('${c}')">${c}</span>`)
+    ).join('');
+    const grid = document.getElementById('shopFullGrid');
+    if (!grid) return;
+    const filtered = _shopCatFilter==='all' ? allItems : allItems.filter(i=>i.cat===_shopCatFilter);
+    grid.innerHTML = filtered.map(shopItemCard).join('');
+  }
+  function filterShopCat(cat){ _shopCatFilter = cat; renderFullShop(); }
+  function addCustomReward(){
+    const name = document.getElementById('rw-name').value.trim();
+    const cost = parseInt(document.getElementById('rw-cost').value) || 80;
+    const cat = document.getElementById('rw-cat').value;
+    const desc = document.getElementById('rw-desc').value.trim();
+    if (!name){ toast('请输入奖励名称','danger'); return; }
+    const catIcos = {'味蕾':'🍽️','微醺':'🍻','放松':'🧖','社交':'🤝','感官':'🎨','户外打卡':'🧗','生活升级':'🏠','冒险':'🚀','仪式感':'✨','买买买':'🛍️','自定义':'💡'};
+    const item = {id:'rw-'+Date.now(), ico:catIcos[cat]||'🎁', name, cost:Math.max(1,cost), cond:s=>true, desc:desc||name, cat, custom:true};
+    S.customRewards.push(item);
+    save(); renderShop();
+    document.getElementById('rw-name').value='';
+    document.getElementById('rw-desc').value='';
+    toast(`✨ 已添加「${name}」到奖励库`);
+  }
+  function removeCustomReward(id){
+    if (!confirm('确认移除这条自定义奖励？')) return;
+    S.customRewards = (S.customRewards||[]).filter(x=>x.id!==id);
+    save(); renderShop();
+    toast('已移除');
+  }
+  function renderCustomRewards(){
+    const box = document.getElementById('customRewardList');
+    if (!box) return;
+    if (!S.customRewards || !S.customRewards.length){ box.innerHTML='<div style="color:var(--sub);font-size:12px">暂无自定义奖励，上方添加你专属的奖励吧~</div>'; return; }
+    box.innerHTML = S.customRewards.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid var(--line)">
+      <span>${r.ico}</span><span style="flex:1;font-size:13px">${r.name}</span>
+      <span class="tag">${r.cat}</span><span style="font-size:12px;color:var(--gold)">💰${r.cost}</span>
+      <button class="danger" style="font-size:11px;padding:2px 6px" onclick="removeCustomReward('${r.id}')">✕</button>
+    </div>`).join('');
+  }
+  function renderHistory(){
+    const box = document.getElementById('calHeat');
+    if (!box) return;
+    const t = new Date();
+    const cells = [];
+    for (let i=29;i>=0;i--){
+      const d = new Date(t); d.setDate(d.getDate()-i);
+      const k = d.toISOString().slice(0,10);
+      const rec = S.history[k];
+      const pts = k===S.date ? calcTodayPts() : (rec?rec.pts:0);
+      let lv = 0;
+      if (pts>0) lv=1; if (pts>=30) lv=2; if (pts>=60) lv=3; if (pts>=100) lv=4;
+      const isToday = k===S.date;
+      cells.push(`<div class="cal-day l${lv} ${isToday?'today':''}" title="${k} · ${pts}分" onclick="showDay('${k}')">${d.getDate()}</div>`);
+    }
+    box.innerHTML = cells.join('');
+
+    const tbody = document.getElementById('histTable');
+    if (tbody){
+      const rows = [];
+      const tPts = calcTodayPts();
+      const tDone = S.tasks.filter(x=>x.done).length;
+      rows.push(`<tr onclick="showDay('${S.date}')" style="cursor:pointer"><td><b>${S.date}</b> <span class="tag">今日</span></td><td>${tDone}/${S.tasks.length}</td><td><b style="color:var(--gold)">${tPts}</b></td><td>${(S.note||'').slice(0,24)||'—'}</td><td><button class="task-btn">查看</button></td></tr>`);
+      Object.keys(S.history).sort().reverse().slice(0,30).forEach(k=>{
+        const r = S.history[k];
+        rows.push(`<tr onclick="showDay('${k}')" style="cursor:pointer"><td>${k}</td><td>${r.doneCount}/${r.total}</td><td>${r.pts}</td><td>${(r.note||'').slice(0,24)||'—'}</td><td><button class="task-btn">查看</button></td></tr>`);
+      });
+      tbody.innerHTML = rows.join('') || '<tr><td colspan="5" class="empty">还没有历史</td></tr>';
+    }
+
+    const chart = document.getElementById('histChart');
+    if (chart){
+      const pts = [];
+      for (let i=29;i>=0;i--){
+        const d = new Date(); d.setDate(d.getDate()-i);
+        const k = d.toISOString().slice(0,10);
+        pts.push(k===S.date ? calcTodayPts() : (S.history[k]?S.history[k].pts:0));
+      }
+      const max = Math.max(...pts, 100);
+      const w = chart.clientWidth || 400;
+      const h = 200;
+      const step = w/Math.max(1,(pts.length-1));
+      const path = pts.map((v,i)=>`${i===0?'M':'L'} ${i*step} ${h-10-v/max*(h-20)}`).join(' ');
+      const area = path + ` L ${(pts.length-1)*step} ${h} L 0 ${h} Z`;
+      chart.innerHTML = `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c9cff" stop-opacity=".6"/><stop offset="1" stop-color="#7c9cff" stop-opacity="0"/></linearGradient></defs>
+        <path d="${area}" fill="url(#g1)"/>
+        <path d="${path}" stroke="#7c9cff" stroke-width="2" fill="none"/>
+      </svg>`;
+    }
+
+    const wc = document.getElementById('weekChart');
+    if (wc){
+      const days = [];
+      for (let i=6;i>=0;i--){
+        const d = new Date(); d.setDate(d.getDate()-i);
+        const k = d.toISOString().slice(0,10);
+        const p = k===S.date ? calcTodayPts() : (S.history[k]?S.history[k].pts:0);
+        days.push({k, p, wd:'日一二三四五六'[d.getDay()]});
+      }
+      const max = Math.max(...days.map(d=>d.p), 100);
+      wc.innerHTML = `<div style="display:flex;height:100%;gap:6px;align-items:flex-end">
+        ${days.map(d=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%">
+          <div style="font-size:10px;color:var(--gold);height:16px">${d.p||''}</div>
+          <div style="width:100%;background:linear-gradient(180deg,#7c9cff,#5b7cff);border-radius:6px 6px 0 0;height:${(d.p/max*100)||2}%;transition:height .4s;min-height:2px"></div>
+          <div style="font-size:11px;color:var(--sub)">${d.wd}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+  }
+  function renderPomo(){
+    const p = S.pomo;
+    const min = Math.floor(p.remain/60), sec = p.remain%60;
+    document.getElementById('pomoTimer').textContent = fmt(min)+':'+fmt(sec);
+    document.getElementById('pomoWorkMin').textContent = p.workMin;
+    document.getElementById('pomoWork').value = p.workMin;
+    document.getElementById('pomoBreak').value = p.breakMin;
+    document.getElementById('pomoBtn').textContent = p.running ? '暂停' : '开始';
+    document.getElementById('pomoState').textContent = p.running
+      ? (p.mode==='work'?'🔥 专注中… 屏蔽干扰':'☕ 休息中… 起来走走')
+      : `按开始，${p.mode==='work'?'认真工作':'休息'} ${p.mode==='work'?p.workMin:p.breakMin} 分钟`;
+    const bindTask = p.bindId ? S.tasks.find(t=>t.id===p.bindId) : null;
+    document.getElementById('pomoTask').textContent = bindTask ? `🎯 ${bindTask.id} ${bindTask.title}` : '未绑定任务';
+    document.getElementById('pomoTodayCnt').textContent = (p.todayCnt||0)+' 轮';
+    document.getElementById('pomoTotal').textContent = p.total||0;
+    document.getElementById('pomoHours').textContent = (Math.round((p.hoursSec||0)/360)/10)+'h';
+    const lbox = document.getElementById('pomoLog');
+    if (lbox){
+      lbox.innerHTML = (p.log||[]).slice(-15).reverse().map(l=>
+        `<div><span class="ts">${l.t}</span>${l.msg} <span class="gain">+${l.gain}</span></div>`
+      ).join('') || '<div class="empty">还没有专注记录</div>';
+    }
+  }
+  function renderSettings(){
+    document.getElementById('sfxOn').checked = !!S.cfg.sfx;
+    document.getElementById('popOn').checked = S.cfg.pop!==false;
+    document.getElementById('lightOn').checked = !!S.cfg.light;
+    document.getElementById('tplEditor').value = S.tpl || DEFAULT_TPL;
+  }
+
+  // ————— 能力库 —————
+  const SKILL_STATUS = {done:{ico:'✅',label:'已获得',color:'#22c55e'},doing:{ico:'⏳',label:'进行中',color:'#f59e0b'},plan:{ico:'📋',label:'计划中',color:'#94a3b8'}};
+  function renderSkills(){
+    const box = document.getElementById('skillGrid');
+    const list = S.skills || [];
+    document.getElementById('skillCnt').textContent =
+      `${list.filter(x=>x.status==='done').length} 已获 · ${list.filter(x=>x.status==='doing').length} 进行中 · ${list.filter(x=>x.status==='plan').length} 计划`;
+    // 按分类聚合
+    const groups = {};
+    list.forEach(sk=>{ (groups[sk.cat]=groups[sk.cat]||[]).push(sk); });
+    let html = '';
+    Object.keys(groups).sort().forEach(cat=>{
+      html += `<div class="task-group-title" style="margin-top:12px">${cat} <span style="opacity:.6;font-weight:400">· ${groups[cat].length} 项</span></div>`;
+      html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px">`;
+      groups[cat].forEach(sk=>{
+        const st = SKILL_STATUS[sk.status]||SKILL_STATUS.plan;
+        const prog = sk.progress!=null ? `<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:${sk.progress}%;background:${st.color}"></div></div>`:'';
+        html += `
+          <div class="task" style="display:block;padding:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+              <div style="font-weight:600;font-size:14px">${st.ico} ${sk.name}</div>
+              <button class="task-btn" onclick="removeSkill('${sk.id}')" title="删除">🗑️</button>
+            </div>
+            <div class="tags" style="margin-top:6px">
+              <span class="tag" style="background:${st.color}22;color:${st.color}">${st.label}</span>
+              <span class="tag">${sk.level||'—'}</span>
+              ${sk.note?`<span class="tag" style="opacity:.75">${sk.note}</span>`:''}
+            </div>
+            ${prog}
+            ${sk.status!=='done'?`<div style="margin-top:8px;display:flex;gap:6px">
+              <button class="task-btn" onclick="setSkillStatus('${sk.id}','done')">标记已获得</button>
+              ${sk.status==='doing'?`<button class="task-btn" onclick="setSkillProgress('${sk.id}')">改进度</button>`:''}
+            </div>`:''}
+          </div>`;
+      });
+      html += `</div>`;
+    });
+    if (!list.length) html = `<div style="opacity:.6;padding:20px;text-align:center">还没有能力，赶紧加一个 👇</div>`;
+    box.innerHTML = html;
+  }
+  function addSkill(){
+    const name = document.getElementById('sk-name').value.trim();
+    if (!name){ toast('先写个名称','danger'); return; }
+    const cat = document.getElementById('sk-cat').value;
+    const level = document.getElementById('sk-level').value;
+    const status = document.getElementById('sk-status').value;
+    const note = document.getElementById('sk-note').value.trim();
+    const id = 'sk-'+Math.random().toString(36).slice(2,7);
+    S.skills = S.skills||[];
+    S.skills.push({id,cat,name,level,status,note,progress: status==='doing'?0:null});
+    document.getElementById('sk-name').value='';
+    document.getElementById('sk-note').value='';
+    save(); renderSkills();
+    checkBadges(); renderAll();
+    toast(`已入库：${name} ✨`, 'ok');
+  }
+  function removeSkill(id){
+    if (!confirm('从能力库移除？')) return;
+    S.skills = (S.skills||[]).filter(x=>x.id!==id);
+    save(); renderSkills();
+  }
+  function setSkillStatus(id, status){
+    const sk = (S.skills||[]).find(x=>x.id===id); if (!sk) return;
+    sk.status = status;
+    if (status==='done'){ sk.progress = 100; toast(`🎉 ${sk.name} 到手！`, 'ok'); }
+    save(); renderSkills();
+    checkBadges(); renderAll();
+  }
+  function setSkillProgress(id){
+    const sk = (S.skills||[]).find(x=>x.id===id); if (!sk) return;
+    const p = prompt(`当前进度%（0-100）`, sk.progress||0);
+    if (p===null) return;
+    const n = Math.max(0, Math.min(100, parseInt(p)||0));
+    sk.progress = n;
+    if (n>=100){ sk.status='done'; toast(`🎉 ${sk.name} 到手！`, 'ok'); }
+    save(); renderSkills();
+    checkBadges(); renderAll();
+  }
+
+  function toggle(id){
+    const t = S.tasks.find(x=>x.id===id); if (!t) return;
+    const before = JSON.parse(JSON.stringify({tasks:S.tasks,cumu:S.cumu,todayBadges:S.todayBadges,coin:S.coin,badges:S.badges}));
+    t.done = !t.done;
+    t.doneAt = t.done ? Date.now() : null;
+    if (t.done){
+      for (const [d,v] of Object.entries(t.dims||{})) S.cumu[d]=(S.cumu[d]||0)+v;
+      S.coin += t.pts;
+      pushLog(`✅ ${t.id} ${t.title}`, t.pts);
+      toast(`+${t.pts}分 · ${t.title.slice(0,14)}`);
+      beep();
+    } else {
+      for (const [d,v] of Object.entries(t.dims||{})) S.cumu[d]=Math.max(0,(S.cumu[d]||0)-v);
+      S.coin = Math.max(0, S.coin - t.pts);
+      pushLog(`↩️ 撤销 ${t.id}`, -t.pts);
+    }
+    checkBadges();
+    S.lastAction = {type:'toggle', before};
+    save(); renderAll();
+  }
+  function checkBadges(){
+    const ctx = {...S, pomoToday:S.pomo.todayCnt||0};
+    const newlyUnlocked = [];
+    BADGES.forEach(b=>{
+      if (!S.badges[b.id]){
+        try{
+          if (b.rule(ctx)){
+            S.badges[b.id] = today();
+            S.todayBadges[b.id] = b.bonus;
+            S.cumu[b.dim] = (S.cumu[b.dim]||0) + b.bonus;
+            S.coin += b.bonus;
+            pushLog(`🎖️ 解锁「${b.id}」 [${b.tier}]`, b.bonus);
+            newlyUnlocked.push(b);
+          }
+        }catch(e){}
+      }
+    });
+    if (newlyUnlocked.length){
+      queueBadgePop(newlyUnlocked);
+      const first = newlyUnlocked[0];
+      toast(`🎖️ ${first.id} +${first.bonus}分${newlyUnlocked.length>1?` （+${newlyUnlocked.length-1} 个）`:''}`, 'gold');
+    }
+    return newlyUnlocked.length;
+  }
+
+  // 徽章弹窗队列
+  let _badgeQueue = [];
+  let _badgeShowing = false;
+  function queueBadgePop(list){
+    _badgeQueue.push(...list);
+    if (!_badgeShowing) showNextBadge();
+  }
+  function showNextBadge(){
+    if (S.cfg.pop===false){ _badgeQueue = []; _badgeShowing=false; return; }
+    if (_badgeQueue.length===0){ _badgeShowing=false; return; }
+    _badgeShowing = true;
+    const b = _badgeQueue.shift();
+    const el = document.getElementById('badgePop');
+    const tierColor = {入门:'#94a3b8', 常规:'#7c9cff', 进阶:'#4dd6c4', 精英:'#c084fc', 传奇:'#fbbf24'}[b.tier] || '#fbbf24';
+    document.getElementById('bpIco').textContent = b.ico;
+    document.getElementById('bpTtl').textContent = b.id;
+    document.getElementById('bpTtl').style.color = tierColor;
+    document.getElementById('bpSub').innerHTML = `<b style="color:${tierColor}">[${b.tier}]</b> ${b.desc} · <b style="color:#fbbf24">+${b.bonus} 分</b>${_badgeQueue.length?`<br><span style="opacity:.6;font-size:11px">还有 ${_badgeQueue.length} 枚待展示…</span>`:''}`;
+    el.classList.add('show');
+    beep();
+    clearTimeout(el._t);
+    el._t = setTimeout(()=>{
+      el.classList.remove('show');
+      setTimeout(showNextBadge, 350);
+    }, 2200);
+  }
+  // 难度 → 分数 & 维度分配比例
+  const DIFF_MAP = {
+    XS:{pts:3,  label:'微任务', desc:'<5分钟能搞定的小事'},
+    S: {pts:5,  label:'小任务', desc:'10-15分钟'},
+    M: {pts:15, label:'中任务', desc:'30-60分钟'},
+    L: {pts:30, label:'大任务', desc:'1-2小时'},
+    XL:{pts:50, label:'硬骨头', desc:'半天量级'},
+    XXL:{pts:80,label:'里程碑', desc:'一天量级'},
+  };
+  // 分组 → 默认主维度 + 次维度分配（主70%/次30%）
+  const GROUP_DIM = {
+    '工作线':{main:'PM', sec:'TM'},
+    '收入线':{main:'RI', sec:'PM'},
+    '体魄线':{main:'BODY', sec:'TL'},
+    '学习线':{main:'TL', sec:'TM'},
+    '临时线':{main:'PM', sec:null},
+  };
+  // 标题关键词 → 维度推断（辅助自动模式）
+  const KW_DIM = [
+    {re:/数据|分析|SQL|BI|ODPS|指标|漏斗|归因|模型|埋点/, dim:'DA'},
+    {re:/考证|教练证|国职|课程|学习|练习|实操|技能|手艺|摄影|潜水|冲浪|攀岩|飞盘/, dim:'TL'},
+    {re:/复盘|项目|协同|对齐|需求|会议|排期|计划|文档|PRD/, dim:'PM'},
+    {re:/读书|思维|认知|心智|复盘总结|反思|方法论|框架|视野|格局|哲学|冥想/, dim:'TM'},
+    {re:/文案|种草|小红书|抖音|B站|视频号|带货|直播|副业|股票|投资|理财/, dim:'RI'},
+    {re:/健身|训练|拉伸|跑步|锻炼|骑车|游泳|瑜伽|哑铃|杠铃|拳击|球|散步|走路|塑形|跳/, dim:'BODY'},
+  ];
+
+  function inferDim(title, group){
+    for (const {re,dim} of KW_DIM){ if (re.test(title)) return dim; }
+    return (GROUP_DIM[group]||{}).main || 'PM';
+  }
+
+  function buildDims(pts, mainDim, group){
+    const sec = (GROUP_DIM[group]||{}).sec;
+    // 单维度 or 双维度
+    if (!sec || sec===mainDim || pts<10) return {[mainDim]:pts};
+    const mainPts = Math.round(pts*0.7);
+    return {[mainDim]:mainPts, [sec]:pts-mainPts};
+  }
+
+  function renderDiffHint(){
+    const diff = document.getElementById('qa-diff').value;
+    const group = document.getElementById('qa-group').value;
+    const dimSel = document.getElementById('qa-dim').value;
+    const title = document.getElementById('qa-title').value.trim();
+    const meta = DIFF_MAP[diff];
+    const mainDim = dimSel==='AUTO' ? inferDim(title, group) : dimSel;
+    const dims = buildDims(meta.pts, mainDim, group);
+    const dimTags = Object.entries(dims).map(([k,v])=>`<span class="tag dim-${k}">${k}+${v}</span>`).join(' ');
+    document.getElementById('diffHint').innerHTML =
+      `📐 ${meta.label} · ${meta.desc} → <span class="tag pts">+${meta.pts}分</span> ${dimTags}${dimSel==='AUTO'?` <span style="opacity:.7">（关键词识别）</span>`:''}`;
+  }
+
+  function addTask(){
+    const title = document.getElementById('qa-title').value.trim();
+    if (!title){ toast('先写个标题～', 'danger'); return; }
+    const group = document.getElementById('qa-group').value;
+    const diff = document.getElementById('qa-diff').value;
+    const dimSel = document.getElementById('qa-dim').value;
+    const meta = DIFF_MAP[diff];
+    const mainDim = dimSel==='AUTO' ? inferDim(title, group) : dimSel;
+    const dims = buildDims(meta.pts, mainDim, group);
+    const id = 'X-'+Math.random().toString(36).slice(2,5).toUpperCase();
+    const t = {
+      id, group, title,
+      desc: `${meta.label} · 新增于 ${new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}`,
+      pts: meta.pts, dims, done:false, custom:true, diff,
+    };
+    S.tasks.push(t);
+    document.getElementById('qa-title').value='';
+    renderDiffHint();
+    save(); renderAll();
+    const dimStr = Object.entries(dims).map(([k,v])=>`${k}+${v}`).join(' ');
+    toast(`✅ 已添加 ${meta.label} · ${meta.pts}分 · ${dimStr}`, 'gold');
+  }
+
+  function editTask(id){
+    const t = S.tasks.find(x=>x.id===id); if (!t) return;
+    const newTitle = prompt('编辑任务标题：', t.title);
+    if (newTitle===null) return;
+    if (!newTitle.trim()){ toast('标题不能为空','danger'); return; }
+    const newDiff = prompt('修改难度？XS/S/M/L/XL/XXL（回车保持不变）', t.diff||'');
+    t.title = newTitle.trim();
+    if (newDiff && DIFF_MAP[newDiff.toUpperCase()]){
+      const wasDone = t.done;
+      // 撤销原积分
+      if (wasDone){
+        for (const [d,v] of Object.entries(t.dims||{})) S.cumu[d]=Math.max(0,(S.cumu[d]||0)-v);
+        S.coin = Math.max(0, S.coin - t.pts);
+      }
+      const meta = DIFF_MAP[newDiff.toUpperCase()];
+      const mainDim = Object.keys(t.dims||{PM:1})[0];
+      t.diff = newDiff.toUpperCase();
+      t.pts = meta.pts;
+      t.dims = buildDims(meta.pts, mainDim, t.group);
+      if (wasDone){
+        for (const [d,v] of Object.entries(t.dims||{})) S.cumu[d]=(S.cumu[d]||0)+v;
+        S.coin += t.pts;
+      }
+    }
+    save(); renderAll();
+    toast(`✏️ 已更新 ${t.id}`);
+  }
+  function removeTask(id){
+    if (!confirm('删除这条任务？（已获积分保留）')) return;
+    S.tasks = S.tasks.filter(t=>t.id!==id);
+    save(); renderAll();
+  }
+  function undo(){
+    if (!S.lastAction){ toast('没有可撤销的操作'); return; }
+    const a = S.lastAction;
+    Object.assign(S, a.before);
+    S.undoCount = (S.undoCount||0)+1;
+    pushLog(`↺ 撤销上一步操作`);
+    S.lastAction = null;
+    checkBadges();
+    save(); renderAll();
+    toast('已撤销');
+  }
+  function buy(id){
+    const item = SHOP.find(x=>x.id===id) || (S.customRewards||[]).find(x=>x.id===id); if (!item) return;
+    const passed = item.cond ? item.cond(S) : true;
+    if (!passed){ toast('条件未达', 'danger'); return; }
+    if (S.coin < item.cost){ toast('星币不足', 'danger'); return; }
+    if (!confirm(`确认花费 ${item.cost} 星币兑换「${item.name}」？`)) return;
+    const before = JSON.parse(JSON.stringify({coin:S.coin, coinSpent:S.coinSpent, inventory:S.inventory}));
+    S.coin -= item.cost;
+    S.coinSpent += item.cost;
+    S.inventory.push({id, date:today()});
+    S.lastAction = {type:'buy', before};
+    pushLog(`🎁 兑换「${item.name}」`, -item.cost);
+    checkBadges();
+    save(); renderAll();
+    toast(`🎁 已兑换：${item.name}`, 'gold');
+  }
+  function saveNote(){ S.note = document.getElementById('dailyNote').value; checkBadges(); save(); renderBadges(); }
+
+  function showDay(k){
+    const rec = k===S.date ? {
+      tasks: S.tasks.map(t=>({...t})),
+      doneCount: S.tasks.filter(x=>x.done).length, total: S.tasks.length,
+      pts: calcTodayPts(), badges: Object.keys(S.todayBadges||{}), note: S.note,
+    } : S.history[k];
+    const card = document.getElementById('dayDetailCard');
+    if (!rec){ toast('这一天没有数据'); return; }
+    document.getElementById('ddTitle').textContent = k + (k===S.date?' · 今天':'');
+    let html = `<div style="font-size:13px;color:var(--sub);margin-bottom:10px">完成 ${rec.doneCount}/${rec.total} · 得分 <b style="color:var(--gold)">${rec.pts}</b></div>`;
+    if (rec.badges&&rec.badges.length) html += `<div class="badges" style="margin-bottom:10px">${rec.badges.map(b=>`<div class="badge unlocked">🎖️ ${b}</div>`).join('')}</div>`;
+    if (rec.note) html += `<div style="padding:10px;background:rgba(124,156,255,.1);border-radius:8px;margin-bottom:10px;font-size:13px">💭 ${rec.note}</div>`;
+    html += rec.tasks.map(t=>`<div class="task ${t.done?'done':''}" style="padding:6px 4px">
+      <input type="checkbox" ${t.done?'checked':''} disabled />
+      <div class="body"><div class="title" style="font-size:13px">${t.id} · ${t.title}</div>
+      <div class="tags"><span class="tag pts">+${t.pts}</span></div></div>
+    </div>`).join('');
+    document.getElementById('ddBody').innerHTML = html;
+    card.style.display='block';
+  }
+  function closeDayDetail(){ document.getElementById('dayDetailCard').style.display='none'; }
+
+  function switchPage(name){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+name).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.page===name));
+    if (name==='dash'||name==='history') renderHistory();
+    if (name==='pomo') renderPomo();
+    if (name==='skills') renderSkills();
+    if (name==='settings') renderSettings();
+  }
+
+  function toggleTheme(){
+    S.cfg.light = !S.cfg.light;
+    document.body.classList.toggle('light', S.cfg.light);
+    save(); renderSettings();
+  }
+  function cfgSet(k,v){ S.cfg[k]=v; save(); }
+  function saveTpl(){ S.tpl = document.getElementById('tplEditor').value; save(); }
+  function resetTpl(){ if (confirm('恢复默认模板？')){ S.tpl = DEFAULT_TPL; save(); renderSettings(); toast('已恢复默认'); } }
+
+  function quickRollover(){
+    if (!confirm('结算今日 → 进入明日？（历史保留，任务模板重置）')) return;
+    settleDay(S.date);
+    S.date = today();
+    S.tasks = parseTpl(S.tpl || DEFAULT_TPL);
+    S.todayBadges = {};
+    S.note = '';
+    save(); renderAll();
+    toast('☀️ 明日已开启');
+  }
+
+  function backfillYesterday(){
+    const k = '2026-07-13';
+    if (S.history[k] && !confirm('7-13 已有数据，覆盖？')) return;
+    S.history[k] = {
+      tasks: parseTpl(DEFAULT_TPL).map(t=>{
+        const done = ['T-101','T-102','T-103','T-301','T-302'].includes(t.id);
+        return {...t, done};
+      }),
+      doneCount: 5, total: 9, pts: 78, note: '首日结算（回填）',
+      badges: ['铁血自律'], dims: {PM:31,TM:17,BODY:30},
+    };
+    S.cumu.PM = Math.max(S.cumu.PM,31);
+    S.cumu.TM = Math.max(S.cumu.TM,17);
+    S.cumu.BODY = Math.max(S.cumu.BODY,30);
+    S.coin = Math.max(S.coin, 78);
+    S.badges['铁血自律'] = k;
+    S.bodyStreak = Math.max(S.bodyStreak,1);
+    save(); renderAll();
+    toast('✅ 已回填 7-13 数据 · 78分', 'gold');
+  }
+
+  function clearHistory(){
+    if (!confirm('清空全部历史与积分？此操作不可撤销')) return;
+    if (!confirm('真的？再确认一次')) return;
+    localStorage.removeItem(KEY);
+    S = defaultState(); save(); renderAll();
+    toast('已清空');
+  }
+
+  function exportMD(){
+    const doneT = S.tasks.filter(x=>x.done);
+    const todayPts = calcTodayPts();
+    let md = `# 立鲸人生成长系统 · ${S.date} 日报\n\n`;
+    md += `**今日入账：${todayPts}分** · 完成 ${doneT.length}/${S.tasks.length} · 连击 ${S.streak} 天 · 健身连击 ${S.bodyStreak} 天\n\n`;
+    if (S.note) md += `> 💭 ${S.note}\n\n`;
+    md += `## 能力面板\n\n| 维度 | 等级 | 累计 |\n|---|---|---|\n`;
+    DIMS.forEach(d=>{ const v=S.cumu[d]||0; md += `| ${DIM_LABEL[d]} | Lv${Math.floor(v/100)} | ${v} |\n`; });
+    md += `\n## ✅ 已完成\n`;
+    doneT.forEach(t=>{ md += `- [x] ${t.id} ${t.title} · ${t.pts}分\n`; });
+    md += `\n## ⏳ 未完成\n`;
+    S.tasks.filter(x=>!x.done).forEach(t=>{ md += `- [ ] ${t.id} ${t.title} · ${t.pts}分\n`; });
+    const unlockedToday = Object.keys(S.todayBadges||{});
+    if (unlockedToday.length){ md += `\n## 🎖️ 今日徽章\n`; unlockedToday.forEach(b=>{ md += `- ${b} +${S.todayBadges[b]}\n`; }); }
+    md += `\n## 💰 钱包 ${S.coin} 星币 · 已消费 ${S.coinSpent}\n`;
+    navigator.clipboard.writeText(md).then(()=>toast('日报已复制到剪贴板 📋'))
+      .catch(()=>{
+        const blob = new Blob([md],{type:'text/markdown'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download=`立鲸日报-${S.date}.md`; a.click();
+        toast('已下载日报文件');
+      });
+  }
+  function exportAll(){
+    const data = JSON.stringify(S,null,2);
+    const blob = new Blob([data],{type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `立鲸人生成长系统-备份-${today()}.json`;
+    a.click();
+    toast('已下载备份文件 💾');
+  }
+  function importAll(){
+    const inp = document.createElement('input');
+    inp.type='file'; inp.accept='.json';
+    inp.onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      const rd = new FileReader();
+      rd.onload = ev => {
+        try {
+          const obj = JSON.parse(ev.target.result);
+          if (!confirm('导入将覆盖当前所有数据，确认？')) return;
+          localStorage.setItem(KEY, JSON.stringify(obj));
+          load(); renderAll();
+          toast('✅ 已导入');
+        } catch(e){ toast('文件格式错误', 'danger'); }
+      };
+      rd.readAsText(f);
+    };
+    inp.click();
+  }
+
+  // ============ 番茄钟 ============
+  let pomoTicker = null;
+  function pomoStartWith(id){
+    S.pomo.bindId = id;
+    switchPage('pomo');
+    renderPomo();
+    if (!S.pomo.running) pomoToggle();
+  }
+  function pomoBindTask(){ S.pomo.bindId = document.getElementById('pomoBind').value||null; save(); renderPomo(); }
+  function pomoConfig(){
+    S.pomo.workMin = parseInt(document.getElementById('pomoWork').value)||25;
+    S.pomo.breakMin = parseInt(document.getElementById('pomoBreak').value)||10;
+    if (!S.pomo.running) S.pomo.remain = (S.pomo.mode==='work'?S.pomo.workMin:S.pomo.breakMin)*60;
+    save(); renderPomo();
+  }
+  function pomoToggle(){
+    S.pomo.running = !S.pomo.running;
+    if (S.pomo.running){
+      pomoTicker = setInterval(pomoTick, 1000);
+    } else {
+      clearInterval(pomoTicker); pomoTicker=null;
+    }
+    save(); renderPomo();
+  }
+  function pomoTick(){
+    S.pomo.remain--;
+    if (S.pomo.mode==='work') S.pomo.hoursSec = (S.pomo.hoursSec||0)+1;
+    if (S.pomo.remain<=0){
+      clearInterval(pomoTicker); pomoTicker=null;
+      S.pomo.running = false;
+      if (S.pomo.mode==='work'){
+        S.pomo.todayCnt = (S.pomo.todayCnt||0)+1;
+        S.pomo.total = (S.pomo.total||0)+1;
+        S.coin += 3;
+        S.pomo.log.push({t:new Date().toTimeString().slice(0,5), msg:`🍅 完成第 ${S.pomo.todayCnt} 轮${S.pomo.bindId?'（'+S.pomo.bindId+'）':''}`, gain:3});
+        pushLog(`🍅 完成 1 轮番茄钟`, 3);
+        toast('🍅 完成一轮！休息一下', 'gold');
+        S.pomo.mode = 'break';
+        S.pomo.remain = S.pomo.breakMin*60;
+        checkBadges();
+      } else {
+        toast('☕ 休息结束，开始下一轮');
+        S.pomo.mode = 'work';
+        S.pomo.remain = S.pomo.workMin*60;
+      }
+      beep();
+    }
+    save(); renderPomo();
+  }
+  function pomoReset(){
+    clearInterval(pomoTicker); pomoTicker=null;
+    S.pomo.running=false; S.pomo.mode='work';
+    S.pomo.remain = S.pomo.workMin*60;
+    save(); renderPomo();
+  }
+
+  document.addEventListener('keydown', e=>{
+    if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+    const n = parseInt(e.key);
+    if (n>=1 && n<=9 && S.tasks[n-1]) return toggle(S.tasks[n-1].id);
+    if (e.key.toLowerCase()==='z') return undo();
+    if (e.key.toLowerCase()==='p') { switchPage('pomo'); if (!S.pomo.running) pomoToggle(); }
+  });
+
+  load();
+  document.body.classList.toggle('light', !!S.cfg.light);
+  // 首次加载后主动检查一次徽章（兼容新增徽章的已达成状态）
+  setTimeout(()=>{ checkBadges(); renderAll(); renderDiffHint(); }, 100);
+  renderAll();
+  setInterval(renderMeta, 60000);
+</script>
+</body>
+</html>
