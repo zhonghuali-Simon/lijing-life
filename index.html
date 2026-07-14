@@ -958,6 +958,49 @@ T-608 | 附加分 | 喝水≥2L | 基础代谢保障 | 5 | BODY:5`;
   }
   function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
 
+  // ═══════ 服务端同步：QoderWork 自动确认已完成任务 ═══════
+  async function syncFromServer(){
+    try{
+      const res = await fetch('./sync.json?t='+Date.now());
+      if (!res.ok) return;
+      const data = await res.json();
+      const todayData = data[today()];
+      if (!todayData || !todayData.done) return;
+      let synced = 0;
+      todayData.done.forEach(id=>{
+        const t = S.tasks.find(x=>x.id===id);
+        if (t && !t.done){
+          t.done = true;
+          t.doneAt = Date.now();
+          for (const [d,v] of Object.entries(t.dims||{})) S.cumu[d]=(S.cumu[d]||0)+v;
+          S.coin += t.pts;
+          pushLog(`🤖 自动确认 ${t.id} ${t.title}`, t.pts);
+          synced++;
+        }
+      });
+      // 同步附加分/临时分
+      if (todayData.bonus){
+        todayData.bonus.forEach(b=>{
+          const logKey = `sync-bonus-${today()}-${b.id||b.reason}`;
+          if (S._syncedBonuses && S._syncedBonuses.includes(logKey)) return;
+          S.coin += (b.pts||0);
+          for (const [d,v] of Object.entries(b.dims||{})) S.cumu[d]=(S.cumu[d]||0)+v;
+          pushLog(`🤖 ${b.reason||'附加分'} +${b.pts}`, b.pts);
+          if (!S._syncedBonuses) S._syncedBonuses = [];
+          S._syncedBonuses.push(logKey);
+          synced++;
+        });
+      }
+      // 同步模板更新（下次刷新新任务自动出现）
+      if (todayData.tpl) S.tpl = todayData.tpl;
+      if (synced>0){
+        checkBadges();
+        save(); renderAll();
+        toast(`🤖 已自动同步 ${synced} 项`);
+      }
+    }catch(e){}
+  }
+
   function settleDay(dateKey){
     const done = S.tasks.filter(x=>x.done);
     const doneCount = done.length;
@@ -1953,6 +1996,8 @@ T-608 | 附加分 | 喝水≥2L | 基础代谢保障 | 5 | BODY:5`;
   // 首次加载后主动检查一次徽章（兼容新增徽章的已达成状态）
   setTimeout(()=>{ checkBadges(); renderAll(); renderDiffHint(); }, 100);
   renderAll();
+  // 自动拉取服务端同步数据
+  setTimeout(syncFromServer, 500);
   setInterval(renderMeta, 60000);
 </script>
 </body>
