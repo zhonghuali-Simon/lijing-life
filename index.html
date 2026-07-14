@@ -16,37 +16,24 @@
     --glow:#00cc7a; --glow2:#0099cc;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:'JetBrains Mono',-apple-system,PingFang SC,Segoe UI,monospace;background:var(--bg);color:var(--text);min-height:100vh;position:relative;overflow-x:hidden}
-  /* 赛博朋克多层背景 */
+  body{margin:0;font-family:'JetBrains Mono',-apple-system,PingFang SC,Segoe UI,monospace;color:var(--text);min-height:100vh;position:relative;overflow-x:hidden;
+    background: #080812 url('./bg.png') center/cover fixed no-repeat;
+  }
+  /* 50% 黑色蒙层 + 扫描线 */
   body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      /* 50% 黑色蒙层 */
-      linear-gradient(rgba(0,0,0,.50),rgba(0,0,0,.50)),
+      /* 半透明黑色蒙层 */
+      linear-gradient(rgba(5,5,12,.50),rgba(5,5,12,.50)),
       /* 扫描线 */
-      repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,159,.018) 2px,rgba(0,255,159,.018) 4px),
-      /* 电路网格 */
-      linear-gradient(90deg,rgba(0,255,159,.03) 1px,transparent 1px),
-      linear-gradient(0deg,rgba(0,255,159,.03) 1px,transparent 1px),
-      /* 小六边形点阵 */
-      radial-gradient(circle 1.5px at 50% 50%,rgba(0,255,159,.06) 100%,transparent 100%),
-      /* 对角线路径 */
-      repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(0,229,255,.015) 40px,rgba(0,229,255,.015) 41px),
-      repeating-linear-gradient(-45deg,transparent,transparent 60px,rgba(0,255,159,.012) 60px,rgba(0,255,159,.012) 61px);
-    background-size: 100% 100%, 100% 100%, 80px 80px, 80px 80px, 40px 40px, 100% 100%, 100% 100%;
+      repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,159,.03) 3px,rgba(0,255,159,.03) 4px);
+    background-size: 100%, 100% 4px;
   }
+  /* 多色光晕层 */
   body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     background:
-      /* 顶部光晕 */
-      radial-gradient(ellipse 600px 300px at 50% -5%,rgba(0,255,159,.10) 0%,transparent 70%),
-      /* 右下角蓝色光晕 */
-      radial-gradient(ellipse 500px 400px at 85% 105%,rgba(0,229,255,.07) 0%,transparent 60%),
-      /* 左侧粉紫光晕 */
-      radial-gradient(ellipse 400px 500px at -5% 50%,rgba(255,0,229,.04) 0%,transparent 60%),
-      /* 角落装饰电路节点 */
-      radial-gradient(circle 2px at 10% 10%,rgba(0,255,159,.2) 100%,transparent 100%),
-      radial-gradient(circle 2px at 90% 20%,rgba(0,229,255,.15) 100%,transparent 100%),
-      radial-gradient(circle 1.5px at 15% 85%,rgba(0,229,255,.12) 100%,transparent 100%),
-      radial-gradient(circle 2px at 88% 80%,rgba(0,255,159,.15) 100%,transparent 100%);
+      radial-gradient(ellipse 800px 400px at 50% -10%,rgba(0,255,159,.12) 0%,transparent 70%),
+      radial-gradient(ellipse 600px 500px at 90% 110%,rgba(0,229,255,.08) 0%,transparent 60%),
+      radial-gradient(ellipse 500px 600px at -10% 60%,rgba(255,0,229,.05) 0%,transparent 50%);
   }
   body.light::before,body.light::after{display:none}
   body.light{background:linear-gradient(180deg,#eef8f2,#f0f8f4)}
