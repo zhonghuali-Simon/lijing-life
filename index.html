@@ -28,6 +28,8 @@
   button.primary{background:linear-gradient(135deg,#5b7cff,#7c9cff);border-color:transparent;color:#fff}
   button.danger{background:transparent;color:var(--danger);border-color:#3a1e28}
   button.ghost{background:transparent}
+  button.music-scene{padding:8px 16px;border-radius:20px;font-size:13px}
+  button.music-scene.active{background:linear-gradient(135deg,#5b7cff,#7c9cff);border-color:transparent;color:#fff}
   button:disabled{opacity:.4;cursor:not-allowed}
   .tabs{display:flex;gap:4px;padding:0 24px;border-bottom:1px solid var(--line);background:rgba(15,18,32,.6);position:sticky;top:70px;z-index:15;overflow-x:auto}
   body.light .tabs{background:rgba(255,255,255,.75)}
@@ -157,7 +159,7 @@
 (function(){
   const LOCK_KEY = 'lijing-lock-pass';
   const UNLOCK_KEY = 'lijing-lock-ok';
-  const DEFAULT_PIN = '8848';
+  const DEFAULT_PIN = '0107';
   const hash = s => {let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return h.toString(36);};
   // 初始化：若从未设置密码，存入默认密码hash
   if (!localStorage.getItem(LOCK_KEY)) localStorage.setItem(LOCK_KEY, hash(DEFAULT_PIN));
@@ -198,6 +200,7 @@
   <div class="tab" data-page="shop" onclick="switchPage('shop')">🎁 兑换商店</div>
   <div class="tab" data-page="history" onclick="switchPage('history')">📅 历史</div>
   <div class="tab" data-page="pomo" onclick="switchPage('pomo')">🍅 专注</div>
+  <div class="tab" data-page="music" onclick="switchPage('music')">🎵 音乐</div>
   <div class="tab" data-page="skills" onclick="switchPage('skills')">🏅 能力库</div>
   <div class="tab" data-page="settings" onclick="switchPage('settings')">⚙️ 设置</div>
 </div>
@@ -464,6 +467,37 @@
         <input id="sk-note" placeholder="备注（考取时间/编号）" style="min-width:160px" />
         <button onclick="addSkill()">+ 新增</button>
       </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-music">
+    <div class="card">
+      <h2>🎵 场景音乐库</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="music-scene active" onclick="switchMusicScene('work')">🏢 工作</button>
+        <button class="music-scene" onclick="switchMusicScene('fitness')">💪 健身</button>
+        <button class="music-scene" onclick="switchMusicScene('rest')">🌙 休息</button>
+        <button class="music-scene" onclick="switchMusicScene('focus')">🧠 专注</button>
+      </div>
+      <div id="musicContent"></div>
+    </div>
+    <div class="card">
+      <h2>自定义歌单</h2>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:10px">
+        添加网易云/Spotify/Apple Music/QQ音乐歌单链接，按场景分类收藏。
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <input id="ml-name" placeholder="歌单名称" style="flex:1;min-width:120px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:13px" />
+        <input id="ml-url" placeholder="歌单链接" style="flex:2;min-width:200px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:13px" />
+        <select id="ml-scene" style="padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:13px">
+          <option value="work">工作</option>
+          <option value="fitness">健身</option>
+          <option value="rest">休息</option>
+          <option value="focus">专注</option>
+        </select>
+        <button onclick="addPlaylist()">+ 添加</button>
+      </div>
+      <div id="customPlaylists"></div>
     </div>
   </div>
 
@@ -832,6 +866,7 @@ T-608 | 附加分 | 喝水≥2L | 基础代谢保障 | 5 | BODY:5`;
       note:'',
       skills: DEFAULT_SKILLS.slice(),
       customRewards: [],
+      playlists: [],
       pomo:{total:0,todayCnt:0,todayDate:today(),running:false,remain:1500,mode:'work',workMin:25,breakMin:10,bindId:null,hoursSec:0,log:[]},
       lastAction:null,
       cfg:{sfx:false,pop:true,light:false},
@@ -859,6 +894,7 @@ T-608 | 附加分 | 喝水≥2L | 基础代谢保障 | 5 | BODY:5`;
     if (!S.pomo) S.pomo = d.pomo;
     if (!S.skills || !S.skills.length) S.skills = DEFAULT_SKILLS.slice(); // 首次升级回填技能
     if (!S.customRewards) S.customRewards = [];
+    if (!S.playlists) S.playlists = [];
     if (S.pomo.todayDate !== today()){ S.pomo.todayCnt=0; S.pomo.todayDate=today(); }
     if (S.date !== today()){
       settleDay(S.date);
@@ -931,7 +967,7 @@ T-608 | 附加分 | 喝水≥2L | 基础代谢保障 | 5 | BODY:5`;
 
   function renderAll(){
     renderMeta(); renderTasks(); renderPanel(); renderBadges();
-    renderLog(); renderShop(); renderHistory(); renderPomo(); renderSettings();
+    renderLog(); renderShop(); renderHistory(); renderPomo(); renderMusic(); renderCustomPlaylists(); renderSettings();
     document.getElementById('tabTodayCnt').textContent = S.tasks.filter(t=>!t.done).length;
     document.getElementById('coinInHeader').textContent = S.coin;
   }
@@ -1561,6 +1597,7 @@ T-608 | 附加分 | 喝水≥2L | 基础代谢保障 | 5 | BODY:5`;
     document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.page===name));
     if (name==='dash'||name==='history') renderHistory();
     if (name==='pomo') renderPomo();
+    if (name==='music'){ renderMusic(); renderCustomPlaylists(); }
     if (name==='skills') renderSkills();
     if (name==='settings') renderSettings();
   }
@@ -1596,6 +1633,117 @@ T-608 | 附加分 | 喝水≥2L | 基础代谢保障 | 5 | BODY:5`;
     document.getElementById('pinOld').value=''; document.getElementById('pinNew').value='';
     msg.textContent = '✅ 密码已更新（其他设备下次访问时需输入新密码）'; msg.style.color='var(--ok)'; msg.style.display='block';
     toast('密码已修改');
+  }
+
+  // ═══════ 音乐库系统 ═══════
+  const MUSIC_SCENES = {
+    work: {
+      label: '🏢 工作模式',
+      desc: '轻快节奏，保持精力不分心',
+      tracks: [
+        {name:'Lo-Fi Work Beats',src:'https://open.spotify.com/embed/playlist/0vvXsWCC9xrXsKd4FyS8kM',type:'spotify'},
+        {name:'Jazz for Work',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX4wta20PHgwo',type:'spotify'},
+        {name:'Productive Morning',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX6ziVCJnEm59',type:'spotify'},
+        {name:'Instrumental Focus',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX0SM0LYsmbMT',type:'spotify'},
+        {name:'Coding Mode',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX5trt9i14X7j',type:'spotify'},
+      ]
+    },
+    fitness: {
+      label: '💪 健身模式',
+      desc: '高能量节拍，燃脂推重量',
+      tracks: [
+        {name:'Beast Mode',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP',type:'spotify'},
+        {name:'Workout Twerkout',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX0HRj9P7NxeE',type:'spotify'},
+        {name:'Power Workout',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX70RN3TfnE5v',type:'spotify'},
+        {name:'Gym Hardstyle',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX5g856aiKiDS',type:'spotify'},
+        {name:'Running Tempo 170BPM',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWYoYGBbGKurt',type:'spotify'},
+      ]
+    },
+    rest: {
+      label: '🌙 休息模式',
+      desc: '放松心情，慢下来充电',
+      tracks: [
+        {name:'Peaceful Piano',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX4sWSpwq3LiO',type:'spotify'},
+        {name:'Deep Sleep',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWZd79rJ6a7lp',type:'spotify'},
+        {name:'Nature Sounds',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX4PP3DA4J0N8',type:'spotify'},
+        {name:'Chill Vibes',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX889U0CL85jj',type:'spotify'},
+        {name:'Ambient Relaxation',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX3Ogo9pFvBkY',type:'spotify'},
+      ]
+    },
+    focus: {
+      label: '🧠 专注模式',
+      desc: '深度工作，心流状态',
+      tracks: [
+        {name:'Brain Food',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWXe9gFZP0gtP',type:'spotify'},
+        {name:'Deep Focus',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ',type:'spotify'},
+        {name:'Focus Flow',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX7EF8wVxBVhG',type:'spotify'},
+        {name:'Binaural Beats Focus',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX9uKNf5jGX6m',type:'spotify'},
+        {name:'Classical Focus',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWVFJtzvDHN4L',type:'spotify'},
+      ]
+    }
+  };
+
+  let _musicScene = 'work';
+  function switchMusicScene(scene){
+    _musicScene = scene;
+    const sceneMap = {work:'工作',fitness:'健身',rest:'休息',focus:'专注'};
+    document.querySelectorAll('.music-scene').forEach(b=>{
+      const isActive = Object.entries(sceneMap).find(([k,v])=>b.textContent.includes(v))?.[0] === scene;
+      b.classList.toggle('active', isActive);
+    });
+    renderMusic();
+  }
+  function renderMusic(){
+    const scene = MUSIC_SCENES[_musicScene];
+    const box = document.getElementById('musicContent'); if (!box) return;
+    let html = `<div style="color:var(--sub);font-size:12px;margin-bottom:12px">${scene.desc}</div>`;
+    html += '<div style="display:grid;gap:12px">';
+    scene.tracks.forEach(t=>{
+      html += `<div style="background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:hidden">
+        <div style="font-size:13px;font-weight:500;margin-bottom:8px">${t.name}</div>
+        <iframe src="${t.src}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:8px"></iframe>
+      </div>`;
+    });
+    // 渲染当前场景的自定义歌单
+    const custom = (S.playlists||[]).filter(p=>p.scene===_musicScene);
+    custom.forEach(p=>{
+      html += `<div style="background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:hidden;position:relative">
+        <div style="font-size:13px;font-weight:500;margin-bottom:8px">${p.name} <span style="font-size:11px;color:var(--sub)">[自定义]</span></div>
+        <a href="${p.url}" target="_blank" style="color:var(--accent);font-size:12px;word-break:break-all">${p.url}</a>
+        <button onclick="removePlaylist('${p.id}')" style="position:absolute;top:8px;right:8px;background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:14px">✕</button>
+      </div>`;
+    });
+    html += '</div>';
+    box.innerHTML = html;
+  }
+  function addPlaylist(){
+    const name = document.getElementById('ml-name').value.trim();
+    const url = document.getElementById('ml-url').value.trim();
+    const scene = document.getElementById('ml-scene').value;
+    if (!name || !url){ toast('请填写歌单名称和链接'); return; }
+    if (!S.playlists) S.playlists = [];
+    S.playlists.push({id:'pl-'+Date.now(), name, url, scene});
+    document.getElementById('ml-name').value='';
+    document.getElementById('ml-url').value='';
+    save(); renderMusic(); renderCustomPlaylists();
+    toast('歌单已添加');
+  }
+  function removePlaylist(id){
+    if (!S.playlists) return;
+    S.playlists = S.playlists.filter(p=>p.id!==id);
+    save(); renderMusic(); renderCustomPlaylists();
+  }
+  function renderCustomPlaylists(){
+    const box = document.getElementById('customPlaylists'); if (!box) return;
+    const list = S.playlists||[];
+    if (!list.length){ box.innerHTML='<div style="color:var(--sub);font-size:12px">暂无自定义歌单</div>'; return; }
+    const scenes = {work:'工作',fitness:'健身',rest:'休息',focus:'专注'};
+    box.innerHTML = list.map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)">
+      <span style="font-size:12px;color:var(--sub);min-width:40px">${scenes[p.scene]||p.scene}</span>
+      <span style="font-size:13px;flex:1">${p.name}</span>
+      <a href="${p.url}" target="_blank" style="font-size:11px;color:var(--accent)">打开</a>
+      <button onclick="removePlaylist('${p.id}')" style="background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:12px">删除</button>
+    </div>`).join('');
   }
 
   function quickRollover(){
