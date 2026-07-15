@@ -307,7 +307,7 @@
     <div class="grid">
       <div>
         <div class="card">
-          <h2>今日任务清单 <span class="right" id="taskProgress">0/0 · 0分</span></h2>
+          <h2>今日任务清单 <span style="display:flex;align-items:center;gap:8px"><button onclick="refreshTasks()" title="从云端拉取AI整理的最新任务" style="padding:4px 10px;font-size:11px">🔄 刷新任务</button><span class="right" id="taskProgress">0/0 · 0分</span></span></h2>
           <div id="taskList"></div>
           <div class="task-group-title">➕ 新增任务（自动按难度打分）</div>
           <div class="quick-add">
@@ -1061,6 +1061,29 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
         toast(`🤖 已自动同步 ${synced} 项`);
       }
     }catch(e){}
+  }
+
+  // 手动刷新：从云端拉取AI整理的最新任务模板，追加新任务（不动已完成的）
+  async function refreshTasks(){
+    toast('🔄 正在从云端拉取最新任务…');
+    try{
+      const res = await fetch(SYNC_URL + '?t='+Date.now());
+      if (!res.ok){ toast('⚠️ 云端暂无更新'); return; }
+      const data = await res.json();
+      const todayData = data[today()];
+      let added = 0;
+      if (todayData && todayData.tpl){
+        S.tpl = todayData.tpl;
+        const tplTasks = parseTpl(todayData.tpl);
+        const existIds = new Set(S.tasks.map(t=>t.id));
+        tplTasks.forEach(t=>{ if (!existIds.has(t.id)){ S.tasks.push(t); added++; } });
+      }
+      // 顺带同步已确认完成的任务/附加分
+      await syncFromServer();
+      save(); renderAll();
+      if (added>0) toast(`✅ 已更新，新增 ${added} 条任务`, 'gold');
+      else toast('✅ 已是最新任务');
+    }catch(e){ toast('⚠️ 刷新失败，请检查网络'); }
   }
 
   // 导出当前状态供上报（复制到剪贴板）
