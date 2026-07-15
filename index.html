@@ -576,30 +576,23 @@
   </div>
 
   <div class="page" id="page-kb">
-    <div class="card" style="padding:12px 18px;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span style="font-size:11px;color:var(--sub);letter-spacing:1px">📅 日期</span>
-        <select id="kbDateSel" onchange="switchKBDate(this.value)" style="min-width:150px"></select>
+    <div class="card">
+      <h2>📚 知识库 <span class="right" id="kbProgress"></span></h2>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+        <span style="font-size:11px;color:var(--sub);letter-spacing:1px">📅</span>
+        <select id="kbDateSel" onchange="switchKBDate(this.value)" style="min-width:140px"></select>
         <button onclick="gotoTodayKB()" style="padding:4px 10px;font-size:11px">今日</button>
-        <span style="font-size:11px;color:var(--sub);margin-left:auto" id="kbDateHint">历史内容自动存档，可回看往期</span>
+        <span style="font-size:11px;color:var(--glow);margin-left:auto" id="kbTimerHint" title="阅读每满5分钟自动+10积分">📖 阅读 0 分钟</span>
       </div>
-    </div>
-    <div class="grid" style="grid-template-columns:1fr 1fr">
-      <div class="card">
-        <h2>📈 股市资讯 <span class="right" id="stockDate"></span></h2>
-        <div style="font-size:12px;color:var(--sub);margin-bottom:12px">美股收盘 · 韩股开盘 · A股热门板块</div>
-        <div id="stockContent"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="music-scene active" onclick="switchKB('biz')">💰 商业逻辑</button>
+        <button class="music-scene" onclick="switchKB('skill')">💼 工作技能</button>
+        <button class="music-scene" onclick="switchKB('fit')">🏋️ 健身知识</button>
+        <button class="music-scene" onclick="switchKB('eng')">🇬🇧 英语对话</button>
+        <button class="music-scene" onclick="switchKB('stock')">📈 股市资讯</button>
       </div>
-      <div class="card">
-        <h2>📚 知识库 <span class="right" id="kbProgress"></span></h2>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
-          <button class="music-scene active" onclick="switchKB('biz')">💰 商业逻辑</button>
-          <button class="music-scene" onclick="switchKB('skill')">💼 工作技能</button>
-          <button class="music-scene" onclick="switchKB('fit')">🏋️ 健身知识</button>
-          <button class="music-scene" onclick="switchKB('eng')">🇬🇧 英语对话</button>
-        </div>
-        <div id="kbContent"></div>
-      </div>
+      <div id="kbContent"></div>
+      <div id="stockContent" style="display:none"></div>
     </div>
   </div>
 
@@ -986,6 +979,7 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
       playlists: [],
       pomo:{total:0,todayCnt:0,todayDate:today(),running:false,remain:1500,mode:'work',workMin:25,breakMin:10,bindId:null,hoursSec:0,log:[]},
       lastAction:null,
+      kbArchive:{}, kbReadDate:today(), kbReadSec:0, kbReadMin:0, kbReadPts:0,
       cfg:{sfx:false,pop:true,light:false},
     };
   }
@@ -1800,7 +1794,7 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
     if (name==='dash'||name==='history') renderHistory();
     if (name==='pomo') renderPomo();
     if (name==='taobao') renderTaobao();
-    if (name==='kb'){ renderKB(); renderStock(); }
+    if (name==='kb'){ renderKB(); renderStock(); startKbReadTimer(); updateKbTimerHint(); }
     if (name==='skills') renderSkills();
     if (name==='settings') renderSettings();
   }
@@ -1930,24 +1924,32 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
     const sel = document.getElementById('kbDateSel'); if (!sel) return;
     const dates = kbDates();
     sel.innerHTML = dates.map(d=>`<option value="${d}" ${d===_kbViewDate?'selected':''}>${d}${d===(STOCK_DATA.date||today())?' · 今日':''}</option>`).join('');
-    const hint = document.getElementById('kbDateHint');
-    if (hint) hint.textContent = `共 ${dates.length} 天存档 · 可回看往期`;
   }
   function switchKBDate(d){ _kbViewDate = d; renderStock(); renderKB(); }
   function gotoTodayKB(){ _kbViewDate = STOCK_DATA.date || today(); renderKBDateSel(); renderStock(); renderKB(); }
 
   function switchKB(cat){
     _kbCat = cat;
-    const arc = (S.kbArchive||{})[_kbViewDate];
-    const kbSrc = (arc && arc.kb) ? arc.kb : KB_DATA;
+    const kbBox = document.getElementById('kbContent');
+    const stockBox = document.getElementById('stockContent');
+    const btnKey = {biz:'💰',skill:'💼',fit:'🏋️',eng:'🇬🇧',stock:'📈'}[cat];
     document.querySelectorAll('#page-kb .music-scene').forEach(b=>{
-      b.classList.toggle('active', b.textContent.includes(kbSrc[cat].label.slice(0,2)));
+      b.classList.toggle('active', b.textContent.includes(btnKey));
     });
-    renderKB();
+    if (cat==='stock'){
+      if (kbBox) kbBox.style.display='none';
+      if (stockBox) stockBox.style.display='block';
+      renderStock();
+    } else {
+      if (stockBox) stockBox.style.display='none';
+      if (kbBox) kbBox.style.display='block';
+      renderKB();
+    }
   }
   function renderKB(){
     const box = document.getElementById('kbContent'); if (!box) return;
     ensureKBArchive();
+    if (_kbCat==='stock'){ return; }
     const arc = (S.kbArchive||{})[_kbViewDate];
     const kbSrc = (arc && arc.kb) ? arc.kb : KB_DATA;
     const prog = document.getElementById('kbProgress');
@@ -1966,6 +1968,40 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
     renderKBDateSel();
     box.innerHTML = html;
   }
+
+  // ═══════ 知识库阅读计时：每满5分钟自动+10积分 ═══════
+  let _kbReadTimer = null;
+  function updateKbTimerHint(){
+    const el = document.getElementById('kbTimerHint');
+    if (el) el.textContent = `📖 今日阅读 ${S.kbReadMin||0} 分钟 · 已得 ${S.kbReadPts||0} 分`;
+  }
+  function startKbReadTimer(){
+    if (_kbReadTimer) return;
+    // 跨日重置
+    if (S.kbReadDate !== today()){ S.kbReadDate = today(); S.kbReadSec = 0; S.kbReadMin = 0; S.kbReadPts = 0; }
+    _kbReadTimer = setInterval(()=>{
+      // 仅在知识库页且页面可见时累计
+      const active = document.getElementById('page-kb').classList.contains('active');
+      if (!active || document.hidden) return;
+      S.kbReadSec = (S.kbReadSec||0) + 1;
+      const min = Math.floor(S.kbReadSec/60);
+      if (min > (S.kbReadMin||0)){
+        S.kbReadMin = min;
+        // 每满5分钟发10积分
+        if (S.kbReadMin % 5 === 0){
+          S.coin += 10;
+          S.kbReadPts = (S.kbReadPts||0) + 10;
+          S.cumu.TM = (S.cumu.TM||0) + 5;
+          pushLog(`📖 知识库阅读满${S.kbReadMin}分钟 +10`, 10);
+          toast(`📖 阅读满${S.kbReadMin}分钟，+10积分`, 'gold');
+          checkBadges(); renderAll();
+        }
+        updateKbTimerHint();
+        save();
+      }
+    }, 1000);
+  }
+  function stopKbReadTimer(){ if (_kbReadTimer){ clearInterval(_kbReadTimer); _kbReadTimer=null; } }
 
   // ═══════ 今日股市资讯 (每日更新·离线预置) ═══════
   const STOCK_DATA = {
@@ -2004,8 +2040,8 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
     ensureKBArchive();
     const arc = (S.kbArchive||{})[_kbViewDate];
     const d = (arc && arc.stock) ? arc.stock : STOCK_DATA;
-    const dateEl = document.getElementById('stockDate');
-    if (dateEl) dateEl.textContent = d.date;
+    const prog = document.getElementById('kbProgress');
+    if (prog) prog.textContent = `${d.date} 行情`;
     const idxRow = (arr)=>arr.map(x=>{
       const col = x.up ? 'var(--glow)' : 'var(--danger)';
       return `<div style="flex:1;min-width:90px;background:rgba(0,255,159,.03);border:1px solid rgba(0,255,159,.08);padding:8px 10px;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)">
@@ -2202,6 +2238,7 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
   renderAll();
   // 自动拉取服务端同步数据
   setTimeout(syncFromServer, 500);
+  startKbReadTimer();
   setInterval(renderMeta, 60000);
 </script>
 </body>
