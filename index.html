@@ -614,6 +614,7 @@
         <button class="music-scene active" onclick="switchKB('biz')">💰 商业逻辑</button>
         <button class="music-scene" onclick="switchKB('skill')">💼 工作技能</button>
         <button class="music-scene" onclick="switchKB('fit')">🏋️ 健身知识</button>
+        <button class="music-scene" onclick="switchKB('look')">💇 变帅护肤</button>
         <button class="music-scene" onclick="switchKB('eng')">🇬🇧 英语对话</button>
         <button class="music-scene" onclick="switchKB('stock')">📈 股市资讯</button>
       </div>
@@ -628,16 +629,24 @@
       <div style="font-size:12px;color:var(--sub);margin-bottom:12px">21天/66天/100天专项挑战，每日打卡·可视化进度·完成解锁大奖励</div>
       <div id="challengeList"></div>
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(0,255,159,.08)">
-        <div class="task-group-title" style="margin-bottom:8px">➕ 新建挑战</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-          <input id="cg-name" placeholder="挑战名称(如: 100天小红书涨粉)" style="flex:2;min-width:200px" />
+        <div class="task-group-title" style="margin-bottom:8px">➕ 新建挑战 <span style="color:var(--sub);font-weight:400;font-size:10px;text-transform:none;letter-spacing:0">只设定挑战框架，任务另加</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
+          <input id="cg-name" placeholder="挑战名称(如: 100天小红书涨粉)" style="flex:2;min-width:220px" />
           <select id="cg-days">
             <option value="21">21天·习惯养成</option>
             <option value="66" selected>66天·行为固化</option>
             <option value="100">100天·长期主义</option>
           </select>
-          <input id="cg-daily" placeholder="每日任务(如: 发1条内容)" style="flex:1;min-width:160px" />
-          <button onclick="createChallenge()">创建</button>
+          <input id="cg-goal" placeholder="目标描述(可选，如: 涨粉1000)" style="flex:2;min-width:200px" />
+          <button onclick="createChallenge()">🎯 创建挑战</button>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(0,255,159,.08)">
+        <div class="task-group-title" style="margin-bottom:8px">➕ 为挑战创建每日任务 <span style="color:var(--sub);font-weight:400;font-size:10px;text-transform:none;letter-spacing:0">一个挑战可包含多条任务</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <select id="ct-cg" style="flex:1;min-width:180px"></select>
+          <input id="ct-title" placeholder="任务(如: 发1条小红书内容)" style="flex:2;min-width:200px" />
+          <button onclick="addChallengeTask()">➕ 添加任务</button>
         </div>
       </div>
     </div>
@@ -2163,6 +2172,19 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
         {title:'关节健康：训练长寿的前提',one:'受伤一次=倒退3个月，预防远比治疗重要。',points:['每次训练前5分钟动态热身(关节画圈/弹力带)','不要每组都冲极限，留1-2rep余量(RIR)','每4-6周安排1周deload(减量恢复周)']},
       ]
     },
+    look: {
+      label:'💇 变帅护肤·穿搭',
+      entries:[
+        {title:'去皱纹核心逻辑：胶原蛋白+防晒+补水',one:'皱纹的根本原因=胶原流失+光老化+缺水，日常3件事解决80%问题。',points:['每天防晒(SPF30+ 户外+80%皱纹来自紫外线)','A醇/视黄醇睡前使用(刺激胶原，从0.1%浓度起步)','7-9小时深睡+每天2L水，皮肤自修复黄金期']},
+        {title:'去法令纹的日常训练',one:'法令纹除了年龄，很大程度是表情肌僵化+咬肌代偿。',points:['面部瑜伽：每天3分钟"O-E"嘴型循环20次(拉伸法令肌群)','舌头顶上颚：每天3组×30秒(激活口周深层肌肉)','脸部滚珠/刮痧板：向上向外提拉，改善面部循环','戒掉单侧咀嚼+托腮习惯(80%人有单侧咬肌肥大)']},
+        {title:'头发变茂密：日常保养+饮食+减压',one:'脱发的三大杀手是雄激素、油脂堵塞、精神压力，非遗传因素可逆。',points:['温水洗头(35-38℃)，每周2-3次别过度','头皮按摩每天5分钟(指腹画圈刺激毛囊血液循环)','蛋白质+锌+B族+omega3：鸡蛋/牡蛎/坚果/深海鱼','米诺地尔/非那雄胺(有雄激素性脱发时医生指导下使用)','戒熬夜(23点前睡)+每天20分钟户外光照']},
+        {title:'男士基础护肤4步曲(2分钟搞定)',one:'早晨：洁面+防晒；晚上：洁面+精华+保湿。',points:['洁面：氨基酸洗面奶(温和不紧绷)，别用皂基','爽肤水/精华：早烟酰胺(去油美白)，晚A醇(抗老)','保湿：清爽乳液，油皮选凝胶质地','防晒：SPF30+ PA+++，室内也需要(蓝光+可见光)']},
+        {title:'眉眼下颌：细节决定颜值上限',one:'184cm身高+82kg体型，五官细节和轮廓感是变帅的最大杠杆。',points:['修眉：眉头浓、眉尾清，男生剑眉/自然眉最能提气质','下颌线：低体脂(<18%)+咬肌训练(每天嚼口香糖10分钟)','双下巴：颈部拉伸每天3组，抬头挺胸站立习惯','发型：找专业Tony Studio剪，两侧短+上方蓬松(纹理烫)是万能选']},
+        {title:'穿搭审美：身高184的黄金比例',one:'184cm是穿搭天赋型，遵循"简约配色+合身版型+质感面料"三原则。',points:['配色：以黑/白/灰/深蓝/驼为主，全身颜色≤3种','版型：合身>宽松>紧身，肩线要平，裤长到脚踝上1cm','必备单品：白T+黑jeans+德训鞋+军绿夹克+米色针织','185+身高优势：可驾驭大廓形oversize外套/长风衣','鞋：白色小白鞋/切尔西靴/工装靴，撑起整个look']},
+        {title:'气场提升：站姿+表情+发声',one:'颜值决定第一印象，气场决定持续吸引力。',points:['站姿：肩膀往后10°，胸廓打开，手臂自然垂放不驼背','眼神：说话时看眉心/鼻梁，专注但不咄咄逼人','微笑：嘴角上扬15°露上排牙齿，日常保持"淡笑"表情','说话：语速放慢20%，音调低半度，句末不上扬','拍照：45°侧脸+微下巴+瞳孔看镜头，找出黄金侧']},
+        {title:'上班族颜值杀手TOP5(逐个击破)',one:'久坐、蓝光、外卖、熬夜、缺水，5大凶手正在毁掉你的脸。',points:['久坐：每小时起身2分钟+靠墙站立5分钟(改善驼背)','蓝光：屏幕距离>50cm，屏保色温调暖，戴防蓝光眼镜','外卖：控盐/糖/油炸物(3个月见效，皮肤透亮)','熬夜：23:00-2:00深睡是修复黄金期，错过=白搭护肤','缺水：桌上放1.5L水壶，每小时喝一次(手动打卡)']},
+      ]
+    },
     eng: {
       label:'🇬🇧 英语对话',
       entries:[
@@ -2244,7 +2266,10 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     const d = STOCK_DATA.date || today();
     // 若已存档但英语条目还是旧字符串格式(缺zh)，用新版覆盖
     const arc = S.kbArchive[d];
-    const isStale = arc && arc.kb && arc.kb.eng && arc.kb.eng.entries[0] && typeof arc.kb.eng.entries[0].one === 'string';
+    const isStale = arc && arc.kb && (
+      (arc.kb.eng && arc.kb.eng.entries[0] && typeof arc.kb.eng.entries[0].one === 'string')
+      || !arc.kb.look
+    );
     if (!arc || isStale){
       S.kbArchive[d] = { stock: JSON.parse(JSON.stringify(STOCK_DATA)), kb: JSON.parse(JSON.stringify(KB_DATA)) };
       save();
@@ -2264,7 +2289,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     _kbCat = cat;
     const kbBox = document.getElementById('kbContent');
     const stockBox = document.getElementById('stockContent');
-    const btnKey = {biz:'💰',skill:'💼',fit:'🏋️',eng:'🇬🇧',stock:'📈'}[cat];
+    const btnKey = {biz:'💰',skill:'💼',fit:'🏋️',look:'💇',eng:'🇬🇧',stock:'📈'}[cat];
     document.querySelectorAll('#page-kb .music-scene').forEach(b=>{
       b.classList.toggle('active', b.textContent.includes(btnKey));
     });
@@ -2314,9 +2339,10 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     }
     let html = '';
     // 分类类型标签
-    const catType = {biz:{label:'方法论·知识',color:'#00e5ff',icon:'🧠'},skill:{label:'方法论',color:'#00ff9f',icon:'⚙️'},fit:{label:'知识·常识',color:'#ff9100',icon:'💪'},eng:{label:'表达·情景',color:'#e040fb',icon:'💬'}}[_kbCat];
+    const catType = {biz:{label:'方法论·知识',color:'#00e5ff',icon:'🧠'},skill:{label:'方法论',color:'#00ff9f',icon:'⚙️'},fit:{label:'知识·常识',color:'#ff9100',icon:'💪'},look:{label:'方法·实操',color:'#ff6090',icon:'✨'},eng:{label:'表达·情景',color:'#e040fb',icon:'💬'}}[_kbCat];
     if (catType){
-      html += `<div style="margin-bottom:12px;padding:6px 10px;background:rgba(${_kbCat==='biz'?'0,229,255':_kbCat==='skill'?'0,255,159':_kbCat==='fit'?'255,145,0':'224,64,251'},.06);border-left:3px solid ${catType.color};font-size:11px;color:var(--sub)">${catType.icon} 内容类型：<b style="color:${catType.color}">${catType.label}</b> · 这些是可长期复用的原则/表达，不是即时新闻</div>`;
+      const bgRgb = {biz:'0,229,255',skill:'0,255,159',fit:'255,145,0',look:'255,96,144',eng:'224,64,251'}[_kbCat] || '0,255,159';
+      html += `<div style="margin-bottom:12px;padding:6px 10px;background:rgba(${bgRgb},.06);border-left:3px solid ${catType.color};font-size:11px;color:var(--sub)">${catType.icon} 内容类型：<b style="color:${catType.color}">${catType.label}</b> · 这些是可长期复用的原则/表达，不是即时新闻</div>`;
     }
     if (isEng){
       html += `<div style="margin-bottom:12px;display:flex;gap:6px"><button class="task-btn" onclick="toggleAllZh(true)" style="font-size:11px">全部显示中文</button><button class="task-btn" onclick="toggleAllZh(false)" style="font-size:11px">全部隐藏</button></div>`;
@@ -2769,13 +2795,49 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   function createChallenge(){
     const name=document.getElementById('cg-name').value.trim();
     const days=parseInt(document.getElementById('cg-days').value);
-    const daily=document.getElementById('cg-daily').value.trim();
-    if (!name || !daily){ toast('请填写挑战名称和每日任务','danger'); return; }
+    const goal=document.getElementById('cg-goal').value.trim();
+    if (!name){ toast('请填写挑战名称','danger'); return; }
     if (!S.challenges) S.challenges = [];
-    S.challenges.push({id:'cg-'+Date.now(), name, days, daily, startDate:today(), progress:{}, createdAt:Date.now()});
-    document.getElementById('cg-name').value=''; document.getElementById('cg-daily').value='';
+    S.challenges.push({id:'cg-'+Date.now(), name, days, goal, tasks:[], startDate:today(), progress:{}, taskProgress:{}, createdAt:Date.now()});
+    document.getElementById('cg-name').value=''; document.getElementById('cg-goal').value='';
     save(); renderChallenges();
-    toast(`🎯 已创建「${name}」挑战`, 'gold');
+    toast(`🎯 已创建「${name}」挑战，请为它添加每日任务`, 'gold');
+  }
+  function addChallengeTask(){
+    const cid=document.getElementById('ct-cg').value;
+    const title=document.getElementById('ct-title').value.trim();
+    if (!cid){ toast('先选择要添加任务的挑战','danger'); return; }
+    if (!title){ toast('请填写任务内容','danger'); return; }
+    const c=(S.challenges||[]).find(x=>x.id===cid); if (!c) return;
+    if (!c.tasks) c.tasks=[];
+    c.tasks.push({id:'ct-'+Date.now(), title});
+    document.getElementById('ct-title').value='';
+    save(); renderChallenges();
+    toast(`➕ 已给「${c.name}」添加任务：${title}`, 'gold');
+  }
+  function deleteChallengeTask(cid, tid){
+    const c=(S.challenges||[]).find(x=>x.id===cid); if (!c) return;
+    c.tasks = (c.tasks||[]).filter(t=>t.id!==tid);
+    // 清理相关打卡
+    if (c.taskProgress){
+      Object.keys(c.taskProgress).forEach(k=>{ if (k.startsWith(tid+'@')) delete c.taskProgress[k]; });
+    }
+    save(); renderChallenges();
+  }
+  function toggleChallengeTaskDay(cid, tid, d){
+    const c=(S.challenges||[]).find(x=>x.id===cid); if (!c) return;
+    if (!c.taskProgress) c.taskProgress={};
+    const key=tid+'@'+d;
+    if (c.taskProgress[key]){ delete c.taskProgress[key]; }
+    else {
+      c.taskProgress[key]=Date.now();
+      S.coin += 2; pushLog(`🎯 ${c.name} · 任务打卡 +2`, 2);
+    }
+    // 同步 progress：任一任务打卡视为当日打卡
+    const hasAny = (c.tasks||[]).some(t=>c.taskProgress[t.id+'@'+d]);
+    if (hasAny){ c.progress[d]=Date.now(); }
+    else { delete c.progress[d]; }
+    save(); renderChallenges(); renderMeta();
   }
   function toggleChallengeDay(cid,d){
     const c=(S.challenges||[]).find(x=>x.id===cid); if (!c) return;
@@ -2792,18 +2854,27 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   function renderChallenges(){
     const box=document.getElementById('challengeList'); if (!box) return;
     const list=S.challenges||[];
+    // 兼容旧数据：daily字段迁移到tasks
+    list.forEach(c=>{ if (c.daily && !c.tasks){ c.tasks=[{id:'ct-legacy-'+c.id, title:c.daily}]; }});
     const rt=document.getElementById('challengeRight');
     if (rt) rt.textContent = list.length ? `${list.length}个进行中` : '暂无挑战';
-    if (!list.length){ box.innerHTML='<div class="empty">还没有挑战，创建一个开启你的66天/100天 ↓</div>'; return; }
+    // 填充任务选择下拉框
+    const sel=document.getElementById('ct-cg');
+    if (sel){
+      sel.innerHTML = list.length
+        ? `<option value="">选择挑战...</option>` + list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')
+        : `<option value="">请先创建挑战</option>`;
+    }
+    if (!list.length){ box.innerHTML='<div class="empty">还没有挑战，先在下方【新建挑战】开启你的66天/100天 ↓</div>'; return; }
     box.innerHTML = list.map(c=>{
       const startD=new Date(c.startDate);
       const totalDays=c.days;
-      const doneDays=Object.keys(c.progress).length;
+      const doneDays=Object.keys(c.progress||{}).length;
       const pct=Math.round(doneDays/totalDays*100);
       let grid='';
       for (let i=0;i<totalDays;i++){
         const day=new Date(startD.getTime()+i*86400000).toISOString().slice(0,10);
-        const done=c.progress[day];
+        const done=(c.progress||{})[day];
         const isToday=day===today();
         const isPast=new Date(day)<new Date(today());
         const bg=done?'rgba(0,255,159,.7)':(isPast?'rgba(255,32,96,.15)':(isToday?'rgba(255,215,64,.3)':'rgba(0,255,159,.05)'));
@@ -2811,20 +2882,32 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
         grid+=`<div title="${day} 第${i+1}天${done?' · 已打卡':''}" onclick="toggleChallengeDay('${c.id}','${day}')" style="width:18px;height:18px;background:${bg};border:${border};cursor:pointer;display:inline-block;margin:1px"></div>`;
       }
       const daysLeft=totalDays-dayIdx(c,today())-1;
+      // 任务列表 + 今日打卡态
+      const tasks=c.tasks||[];
+      const taskList = tasks.length ? tasks.map(t=>{
+        const key=t.id+'@'+today();
+        const done=(c.taskProgress||{})[key];
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:rgba(0,255,159,${done?'.08':'.02'});border:1px solid rgba(0,255,159,${done?'.2':'.06'});margin-bottom:4px">
+          <input type="checkbox" ${done?'checked':''} onchange="toggleChallengeTaskDay('${c.id}','${t.id}','${today()}')" />
+          <span style="flex:1;font-size:12px;${done?'text-decoration:line-through;color:var(--sub)':''}">${t.title}</span>
+          <button class="task-btn" onclick="deleteChallengeTask('${c.id}','${t.id}')" title="删除任务">🗑️</button>
+        </div>`;
+      }).join('') : `<div style="font-size:11px;color:var(--sub);padding:6px 0">此挑战暂无每日任务，在下方【为挑战创建每日任务】添加</div>`;
       return `<div style="padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <div>
-            <div style="font-size:14px;font-weight:600">${c.name}</div>
-            <div style="font-size:11px;color:var(--sub);margin-top:2px">每日：${c.daily} · ${c.startDate} 起 · ${daysLeft>0?`剩${daysLeft}天`:'已到期'}</div>
+            <div style="font-size:14px;font-weight:600">${c.name}${c.goal?` <span style="font-size:11px;color:var(--gold);font-weight:400">· 🎯 ${c.goal}</span>`:''}</div>
+            <div style="font-size:11px;color:var(--sub);margin-top:2px">${c.startDate} 起 · ${daysLeft>0?`剩${daysLeft}天`:'已到期'} · ${tasks.length} 个任务</div>
           </div>
           <div style="text-align:right">
             <div style="font-size:18px;font-weight:700;color:var(--glow)">${doneDays}<span style="font-size:12px;color:var(--sub)">/${totalDays}</span></div>
             <div style="font-size:10px;color:var(--sub)">${pct}%</div>
           </div>
         </div>
+        <div style="margin:8px 0">${taskList}</div>
         <div style="margin:8px 0">${grid}</div>
-        <button class="task-btn" onclick="toggleChallengeDay('${c.id}','${today()}')">今日打卡</button>
-        <button class="task-btn danger" onclick="deleteChallenge('${c.id}')">🗑️</button>
+        <button class="task-btn" onclick="toggleChallengeDay('${c.id}','${today()}')">📌 今日整体打卡</button>
+        <button class="task-btn danger" onclick="deleteChallenge('${c.id}')">🗑️ 删除挑战</button>
       </div>`;
     }).join('');
   }
